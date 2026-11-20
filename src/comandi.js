@@ -4,6 +4,7 @@
 
 import * as Foto from "./foto.js";
 import * as Numeri from "./numeri.js";
+import { riduci } from "./immagini.js";
 
 function avviso(testo) {
   if (!testo) return Promise.resolve();
@@ -41,6 +42,7 @@ const COMANDI = {
   layout2: comando(() => Foto.cambiaLayout(2), false),
   layout4: comando(() => Foto.cambiaLayout(4), false),
   capitoloFoto: comando(() => Foto.capitoloFoto()),
+  comprimi: comando(() => Foto.comprimi(b64 => riduci(b64))),
   numeriEuro: comando(() => Numeri.converti("euro")),
   numeriFinanziario: comando(() => Numeri.converti("finanziario")),
   numeriAmministrativo: comando(() => Numeri.converti("amministrativo"))

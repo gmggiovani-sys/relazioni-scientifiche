@@ -728,5 +728,8 @@ Office.onReady(info => {
   const ammessi = [...document.querySelectorAll("#pannello option")].map(o => o.value);
   const richiesto = parametri.get("pannello");
   mostraPannello(ammessi.includes(richiesto) ? richiesto : tecniche ? "foto" : "citazioni");
+
+  // pulsante "Esporta in PDF" della scheda: il pannello si apre e prepara subito il PDF
+  if (parametri.get("azione") === "pdf" && tecniche) $("esportaPdf").click();
   $("pannello").addEventListener("change", e => mostraPannello(e.target.value));
 });
