@@ -129,15 +129,38 @@ async function creaTabella(context, paragrafo, foto, colonne, avanzamento) {
   return t;
 }
 
-// Ricostruisce la tabella con le foto indicate e il layout scelto, nello stesso punto
+// Ricostruisce la tabella con le foto indicate e il layout scelto, nello stesso punto.
+// La nuova tabella si crea prima del primo paragrafo FUORI da ogni tabella che segue la vecchia,
+// dopo aver tolto la vecchia. In Word LTSC i paragrafi "prima" o "dopo" la tabella dati da Word
+// (insertParagraph, getParagraphAfter) possono cadere nella sua prima cella: la nuova tabella
+// nasceva dentro la vecchia e spariva con lei. Per questo il paragrafo si cerca confrontando le posizioni.
 async function sostituisciTabella(context, vecchia, foto, colonne, avanzamento) {
-  const segnaposto = vecchia.insertParagraph("", "Before");
-  segnaposto.styleBuiltIn = Word.Style.normal;
-  const nuova = await creaTabella(context, segnaposto, foto, colonne, avanzamento);
+  const ancora = await paragrafoDopo(context, vecchia);
+
   vecchia.delete();
   await context.sync();
-  try { segnaposto.delete(); await context.sync(); } catch (e) { /* resta un paragrafo vuoto */ }
-  return nuova;
+
+  return creaTabella(context, ancora, foto, colonne, avanzamento);
+}
+
+// Primo paragrafo del corpo, fuori dalle tabelle, che viene dopo la tabella (se non c'è, uno nuovo in fondo)
+async function paragrafoDopo(context, tabella) {
+  const ps = context.document.body.paragraphs;
+  ps.load("items/tableNestingLevel");
+  const zona = tabella.getRange("Whole");
+  await context.sync();
+
+  const fuori = ps.items.filter(p => p.tableNestingLevel === 0);
+  const confronti = fuori.map(p => p.getRange("Whole").compareLocationWith(zona));
+  await context.sync();
+
+  const k = confronti.findIndex(c => c.value === "After" || c.value === "AdjacentAfter");
+  if (k >= 0) return fuori[k];
+
+  const nuovo = context.document.body.insertParagraph("", "End");
+  nuovo.styleBuiltIn = Word.Style.normal;
+  await context.sync();
+  return nuovo;
 }
 
 // ===============================
