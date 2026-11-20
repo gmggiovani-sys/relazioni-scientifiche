@@ -1,7 +1,7 @@
 # Relazioni Scientifiche – add-in per Word (Mac e Windows)
 
 Versione "Office Add-in" degli strumenti della scheda Relazioni Scientifiche. Funziona in Word per Mac,
-Word per Windows e Word sul web. I file del programma stanno su Netlify; i documenti restano sul
+Word per Windows e Word sul web. I file del programma stanno su GitHub Pages; i documenti restano sul
 computer e non passano da lì.
 
 Contiene: **Bibliografia**, **Giurisprudenza**, **Abbreviazioni**, **Citazioni nelle note** e **Sommari dei capitoli**, come la scheda Relazioni Scientifiche della versione Windows.
@@ -12,18 +12,19 @@ abbreviazioni, citazioni) si aggiungono man mano.
 - `manifest.xml` → scheda **Relazioni Scientifiche** (bibliografia, giurisprudenza, abbreviazioni, citazioni, sommari).
 - `manifest-tecniche.xml` → scheda **Relazioni Tecniche** (tabelle di foto, compressione, PDF, numeri in lettere).
 
-Si installano allo stesso modo (anche tutti e due); usano gli stessi file pubblicati su Netlify.
+Si installano allo stesso modo (anche tutti e due); usano gli stessi file pubblicati su GitHub Pages.
 
-## 1. Pubblicare su Netlify
+## 1. Pubblicare su GitHub Pages
 
-Il sito è `https://effulgent-moonbeam-a555b4.netlify.app/` (gli indirizzi sono già in `manifest.xml`).
+Il sito è `https://gmggiovani-sys.github.io/relazioni-scientifiche/` (repository
+`gmggiovani-sys/relazioni-scientifiche`, pubblico; gli indirizzi sono già nei due manifest).
 
-- **Primo caricamento / aggiornamento**: su <https://app.netlify.com>, apri il sito, scheda **Deploys**,
-  e trascina la cartella `RelazioniScientificheWeb` nel riquadro in fondo alla pagina.
-- **Prova**: `https://effulgent-moonbeam-a555b4.netlify.app/taskpane.html` deve aprirsi nel browser
+- **Aggiornamento**: nel repository su GitHub, **Add file → Upload files**, trascina il contenuto
+  di questa cartella (non la cartella stessa) e **Commit changes**. I file con lo stesso nome si sostituiscono.
+- **Pubblicazione**: Settings → Pages → Deploy from a branch → main, / (root). Dopo un caricamento
+  il sito si aggiorna in 1–2 minuti.
+- **Prova**: `https://gmggiovani-sys.github.io/relazioni-scientifiche/taskpane.html` deve aprirsi nel browser
   (il pannello senza Word mostra solo i campi, è normale).
-- Se cambi il nome del sito (Site configuration → Change site name), sostituisci il vecchio indirizzo
-  in `manifest.xml` e reinstallalo.
 
 ## 2. Installare in Word per Mac
 
@@ -50,7 +51,7 @@ Con entrambe le versioni installate vedrai due schede con lo stesso nome: va ben
 
 ## Aggiornamenti
 
-- Se cambiano i file del programma (`.js`, `.html`, `.css`): basta ricaricarli su Netlify (scheda Deploys).
+- Se cambiano i file del programma (`.js`, `.html`, `.css`): basta ricaricarli su GitHub (Add file → Upload files).
   Word può tenere in memoria la versione precedente per un po'; chiudere e riaprire il pannello di solito basta.
   Su Mac, se resta la vecchia: chiudi Word e svuota
   `~/Library/Containers/com.microsoft.Word/Data/Library/Caches/`.

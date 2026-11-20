@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Relazioni Scientifiche – add-in per Word (Mac, Windows, Word sul web).
-  I file del programma sono pubblicati su Netlify: https://effulgent-moonbeam-a555b4.netlify.app/
+  I file del programma sono pubblicati su GitHub Pages: https://gmggiovani-sys.github.io/relazioni-scientifiche/
   Se cambi indirizzo del sito, sostituiscilo in tutti gli indirizzi qui sotto.
 -->
 <OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
@@ -10,16 +10,16 @@
            xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
            xsi:type="TaskPaneApp">
   <Id>a4f76556-9f46-45d0-a350-58dd27734082</Id>
-  <Version>1.0.4.0</Version>
+  <Version>1.0.5.0</Version>
   <ProviderName>Gian Marco</ProviderName>
   <DefaultLocale>it-IT</DefaultLocale>
   <DisplayName DefaultValue="Relazioni Scientifiche"/>
   <Description DefaultValue="Strumenti per la tesi: sommari dei capitoli, bibliografia, giurisprudenza, abbreviazioni e citazioni secondo le istruzioni della cattedra."/>
-  <IconUrl DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-64.png"/>
-  <SupportUrl DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/"/>
+  <IconUrl DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/assets/icon-64.png"/>
+  <SupportUrl DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/"/>
   <AppDomains>
-    <AppDomain>https://effulgent-moonbeam-a555b4.netlify.app</AppDomain>
+    <AppDomain>https://gmggiovani-sys.github.io</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Document"/>
@@ -30,7 +30,7 @@
     </Sets>
   </Requirements>
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/taskpane.html?scheda=scientifiche"/>
+    <SourceLocation DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/taskpane.html?scheda=scientifiche"/>
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
 
@@ -162,17 +162,17 @@
 
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-16.png"/>
-        <bt:Image id="Icon.32" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-32.png"/>
-        <bt:Image id="Icon.80" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-80.png"/>
+        <bt:Image id="Icon.16" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/assets/icon-16.png"/>
+        <bt:Image id="Icon.32" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/assets/icon-32.png"/>
+        <bt:Image id="Icon.80" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/assets/icon-80.png"/>
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Commands.Url" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/commands.html"/>
-        <bt:Url id="Taskpane.Bibliografia" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/taskpane.html?scheda=scientifiche&amp;pannello=bibliografia"/>
-        <bt:Url id="Taskpane.Giurisprudenza" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/taskpane.html?scheda=scientifiche&amp;pannello=giurisprudenza"/>
-        <bt:Url id="Taskpane.Abbreviazioni" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/taskpane.html?scheda=scientifiche&amp;pannello=abbreviazioni"/>
-        <bt:Url id="Taskpane.Citazioni" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/taskpane.html?scheda=scientifiche&amp;pannello=citazioni"/>
-        <bt:Url id="Taskpane.Sommari" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/taskpane.html?scheda=scientifiche&amp;pannello=sommari"/>
+        <bt:Url id="Commands.Url" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/commands.html"/>
+        <bt:Url id="Taskpane.Bibliografia" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/taskpane.html?scheda=scientifiche&amp;pannello=bibliografia"/>
+        <bt:Url id="Taskpane.Giurisprudenza" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/taskpane.html?scheda=scientifiche&amp;pannello=giurisprudenza"/>
+        <bt:Url id="Taskpane.Abbreviazioni" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/taskpane.html?scheda=scientifiche&amp;pannello=abbreviazioni"/>
+        <bt:Url id="Taskpane.Citazioni" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/taskpane.html?scheda=scientifiche&amp;pannello=citazioni"/>
+        <bt:Url id="Taskpane.Sommari" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/taskpane.html?scheda=scientifiche&amp;pannello=sommari"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="Tab.Label" DefaultValue="Relazioni Scientifiche"/>

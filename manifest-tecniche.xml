@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Relazioni Tecniche – add-in per Word (Mac, Windows, Word sul web): foto e numeri in lettere.
-  Usa gli stessi file di Relazioni Scientifiche, pubblicati su Netlify: https://effulgent-moonbeam-a555b4.netlify.app/
+  Usa gli stessi file di Relazioni Scientifiche, pubblicati su GitHub Pages: https://gmggiovani-sys.github.io/relazioni-scientifiche/
 -->
 <OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -9,16 +9,16 @@
            xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
            xsi:type="TaskPaneApp">
   <Id>e2d46e6b-ba25-48bb-9c93-a3ad78924273</Id>
-  <Version>1.0.0.0</Version>
+  <Version>1.0.1.0</Version>
   <ProviderName>Gian Marco</ProviderName>
   <DefaultLocale>it-IT</DefaultLocale>
   <DisplayName DefaultValue="Relazioni Tecniche"/>
   <Description DefaultValue="Strumenti per le relazioni tecniche: tabelle di foto con didascalie numerate, riduzione delle immagini, numeri in lettere."/>
-  <IconUrl DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-64.png"/>
-  <SupportUrl DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/"/>
+  <IconUrl DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/assets/icon-64.png"/>
+  <SupportUrl DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/"/>
   <AppDomains>
-    <AppDomain>https://effulgent-moonbeam-a555b4.netlify.app</AppDomain>
+    <AppDomain>https://gmggiovani-sys.github.io</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Document"/>
@@ -29,7 +29,7 @@
     </Sets>
   </Requirements>
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/taskpane.html?scheda=tecniche"/>
+    <SourceLocation DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/taskpane.html?scheda=tecniche"/>
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
 
@@ -308,13 +308,13 @@
 
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-16.png"/>
-        <bt:Image id="Icon.32" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-32.png"/>
-        <bt:Image id="Icon.80" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-80.png"/>
+        <bt:Image id="Icon.16" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/assets/icon-16.png"/>
+        <bt:Image id="Icon.32" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/assets/icon-32.png"/>
+        <bt:Image id="Icon.80" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/assets/icon-80.png"/>
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Commands.Url" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/commands.html"/>
-        <bt:Url id="Taskpane.Foto" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/taskpane.html?scheda=tecniche&amp;pannello=foto"/>
+        <bt:Url id="Commands.Url" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/commands.html"/>
+        <bt:Url id="Taskpane.Foto" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/taskpane.html?scheda=tecniche&amp;pannello=foto"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="Tab.Label" DefaultValue="Relazioni Tecniche"/>
