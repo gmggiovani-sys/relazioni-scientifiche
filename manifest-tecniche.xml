@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Relazioni Tecniche – add-in per Word (Mac, Windows, Word sul web): foto e numeri in lettere.
+  Usa gli stessi file di Relazioni Scientifiche, pubblicati su Netlify: https://effulgent-moonbeam-a555b4.netlify.app/
+-->
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+           xsi:type="TaskPaneApp">
+  <Id>e2d46e6b-ba25-48bb-9c93-a3ad78924273</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>Gian Marco</ProviderName>
+  <DefaultLocale>it-IT</DefaultLocale>
+  <DisplayName DefaultValue="Relazioni Tecniche"/>
+  <Description DefaultValue="Strumenti per le relazioni tecniche: tabelle di foto con didascalie numerate, riduzione delle immagini, numeri in lettere."/>
+  <IconUrl DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-64.png"/>
+  <SupportUrl DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/"/>
+  <AppDomains>
+    <AppDomain>https://effulgent-moonbeam-a555b4.netlify.app</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Document"/>
+  </Hosts>
+  <Requirements>
+    <Sets DefaultMinVersion="1.1">
+      <Set Name="WordApi" MinVersion="1.3"/>
+    </Sets>
+  </Requirements>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/taskpane.html?scheda=tecniche"/>
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Document">
+        <DesktopFormFactor>
+          <FunctionFile resid="Commands.Url"/>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <CustomTab id="RT.Tab">
+              <Group id="RT.GInserimento">
+                <Label resid="Inserimento.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16"/>
+                  <bt:Image size="32" resid="Icon.32"/>
+                  <bt:Image size="80" resid="Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="RT.Inserisci">
+                  <Label resid="Inserisci.Label"/>
+                  <Supertip>
+                    <Title resid="Inserisci.Label"/>
+                    <Description resid="Inserisci.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>RelazioniTecniche</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Foto"/>
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="RT.GTabella">
+                <Label resid="Tabella.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16"/>
+                  <bt:Image size="32" resid="Icon.32"/>
+                  <bt:Image size="80" resid="Icon.80"/>
+                </Icon>
+                <Control xsi:type="Menu" id="RT.Layout">
+                  <Label resid="Layout.Label"/>
+                  <Supertip>
+                    <Title resid="Layout.Label"/>
+                    <Description resid="Layout.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Items>
+                    <Item id="RT.Layout1">
+                      <Label resid="L1.Label"/>
+                      <Supertip>
+                        <Title resid="L1.Label"/>
+                        <Description resid="Layout.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.16"/>
+                        <bt:Image size="32" resid="Icon.32"/>
+                        <bt:Image size="80" resid="Icon.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>layout1</FunctionName>
+                      </Action>
+                    </Item>
+                    <Item id="RT.Layout2">
+                      <Label resid="L2.Label"/>
+                      <Supertip>
+                        <Title resid="L2.Label"/>
+                        <Description resid="Layout.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.16"/>
+                        <bt:Image size="32" resid="Icon.32"/>
+                        <bt:Image size="80" resid="Icon.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>layout2</FunctionName>
+                      </Action>
+                    </Item>
+                    <Item id="RT.Layout4">
+                      <Label resid="L4.Label"/>
+                      <Supertip>
+                        <Title resid="L4.Label"/>
+                        <Description resid="Layout.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.16"/>
+                        <bt:Image size="32" resid="Icon.32"/>
+                        <bt:Image size="80" resid="Icon.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>layout4</FunctionName>
+                      </Action>
+                    </Item>
+                  </Items>
+                </Control>
+                <Control xsi:type="Button" id="RT.Riorganizza">
+                  <Label resid="Riorganizza.Label"/>
+                  <Supertip>
+                    <Title resid="Riorganizza.Label"/>
+                    <Description resid="Riorganizza.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>riorganizza</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="RT.Indietro">
+                  <Label resid="Indietro.Label"/>
+                  <Supertip>
+                    <Title resid="Indietro.Label"/>
+                    <Description resid="Sposta.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>spostaIndietro</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="RT.Avanti">
+                  <Label resid="Avanti.Label"/>
+                  <Supertip>
+                    <Title resid="Avanti.Label"/>
+                    <Description resid="Sposta.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>spostaAvanti</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="RT.GGestione">
+                <Label resid="Gestione.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16"/>
+                  <bt:Image size="32" resid="Icon.32"/>
+                  <bt:Image size="80" resid="Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="RT.Rinumera">
+                  <Label resid="Rinumera.Label"/>
+                  <Supertip>
+                    <Title resid="Rinumera.Label"/>
+                    <Description resid="Rinumera.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>rinumera</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="RT.Capitolo">
+                  <Label resid="Capitolo.Label"/>
+                  <Supertip>
+                    <Title resid="Capitolo.Label"/>
+                    <Description resid="Capitolo.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>capitoloFoto</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="RT.Comprimi">
+                  <Label resid="Comprimi.Label"/>
+                  <Supertip>
+                    <Title resid="Comprimi.Label"/>
+                    <Description resid="Comprimi.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>RelazioniTecniche</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Foto"/>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="RT.Pdf">
+                  <Label resid="Pdf.Label"/>
+                  <Supertip>
+                    <Title resid="Pdf.Label"/>
+                    <Description resid="Pdf.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>RelazioniTecniche</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Foto"/>
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="RT.GNumeri">
+                <Label resid="Numeri.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16"/>
+                  <bt:Image size="32" resid="Icon.32"/>
+                  <bt:Image size="80" resid="Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="RT.Euro">
+                  <Label resid="Euro.Label"/>
+                  <Supertip>
+                    <Title resid="Euro.Label"/>
+                    <Description resid="Euro.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>numeriEuro</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="RT.Finanziario">
+                  <Label resid="Fin.Label"/>
+                  <Supertip>
+                    <Title resid="Fin.Label"/>
+                    <Description resid="Fin.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>numeriFinanziario</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="RT.Amministrativo">
+                  <Label resid="Amm.Label"/>
+                  <Supertip>
+                    <Title resid="Amm.Label"/>
+                    <Description resid="Amm.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>numeriAmministrativo</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
+              <Label resid="Tab.Label"/>
+            </CustomTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+
+    <Resources>
+      <bt:Images>
+        <bt:Image id="Icon.16" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-16.png"/>
+        <bt:Image id="Icon.32" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-32.png"/>
+        <bt:Image id="Icon.80" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-80.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="Commands.Url" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/commands.html"/>
+        <bt:Url id="Taskpane.Foto" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/taskpane.html?scheda=tecniche&amp;pannello=foto"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="Tab.Label" DefaultValue="Relazioni Tecniche"/>
+        <bt:String id="Inserimento.Label" DefaultValue="Inserimento Foto"/>
+        <bt:String id="Inserisci.Label" DefaultValue="Inserisci Foto"/>
+        <bt:String id="Tabella.Label" DefaultValue="Modifica Tabella"/>
+        <bt:String id="Layout.Label" DefaultValue="Cambia Layout"/>
+        <bt:String id="L1.Label" DefaultValue="1 Foto per Riga"/>
+        <bt:String id="L2.Label" DefaultValue="2 Foto per Riga"/>
+        <bt:String id="L4.Label" DefaultValue="4 Foto per Riga"/>
+        <bt:String id="Riorganizza.Label" DefaultValue="Riorganizza Foto"/>
+        <bt:String id="Indietro.Label" DefaultValue="◀ Sposta Indietro"/>
+        <bt:String id="Avanti.Label" DefaultValue="Sposta Avanti ▶"/>
+        <bt:String id="Gestione.Label" DefaultValue="Gestione Foto"/>
+        <bt:String id="Rinumera.Label" DefaultValue="Rinumera Foto"/>
+        <bt:String id="Capitolo.Label" DefaultValue="Crea Capitolo Foto"/>
+        <bt:String id="Comprimi.Label" DefaultValue="Comprimi Immagini"/>
+        <bt:String id="Pdf.Label" DefaultValue="Esporta in PDF"/>
+        <bt:String id="Numeri.Label" DefaultValue="Numeri in lettere"/>
+        <bt:String id="Euro.Label" DefaultValue="Formato Euro"/>
+        <bt:String id="Fin.Label" DefaultValue="Formato Finanziario"/>
+        <bt:String id="Amm.Label" DefaultValue="Formato Amministrativo"/>
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="Inserisci.Tip" DefaultValue='Apre il pannello per scegliere le foto e inserirle in una tabella con 1, 2 o 4 foto per riga e la didascalia "Foto N – nome del file". Si possono ridurre prima di inserirle.'/>
+        <bt:String id="Layout.Tip" DefaultValue="Con il cursore nella tabella: la ridispone con 1, 2 o 4 foto per riga mantenendo ordine e didascalie."/>
+        <bt:String id="Riorganizza.Tip" DefaultValue="Con il cursore nella tabella: dopo aver tolto delle foto elimina i posti vuoti e le didascalie rimaste sole, poi rinumera."/>
+        <bt:String id="Sposta.Tip" DefaultValue="Con il cursore su una foto o sulla sua didascalia: la scambia con la foto precedente o successiva, poi rinumera."/>
+        <bt:String id="Rinumera.Tip" DefaultValue='Rinumera in sequenza le didascalie "Foto N" di tutte le tabelle del documento.'/>
+        <bt:String id="Capitolo.Tip" DefaultValue="Inserisce il titolo DOCUMENTAZIONE FOTOGRAFICA (Titolo 1) dopo il paragrafo corrente o sopra la tabella delle foto."/>
+        <bt:String id="Comprimi.Tip" DefaultValue="Apre il pannello: riduce le immagini del documento (lato lungo 1600 px, larghezza massima 15 cm)."/>
+        <bt:String id="Pdf.Tip" DefaultValue="Apre il pannello: Word prepara il PDF del documento da scaricare."/>
+        <bt:String id="Euro.Tip" DefaultValue="Il numero sotto il cursore diventa 1.234,50 (milleduecentotrentaquattro euro e cinquanta centesimi)."/>
+        <bt:String id="Fin.Tip" DefaultValue="Il numero sotto il cursore diventa 1.234,50 (milleduecentotrentaquattro/50)."/>
+        <bt:String id="Amm.Tip" DefaultValue="Il numero sotto il cursore diventa 1.234,50 (Euro milleduecentotrentaquattro/50)."/>
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>

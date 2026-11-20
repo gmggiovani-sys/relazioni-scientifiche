@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Relazioni Scientifiche – add-in per Word (Mac, Windows, Word sul web).
+  I file del programma sono pubblicati su Netlify: https://effulgent-moonbeam-a555b4.netlify.app/
+  Se cambi indirizzo del sito, sostituiscilo in tutti gli indirizzi qui sotto.
+-->
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+           xsi:type="TaskPaneApp">
+  <Id>a4f76556-9f46-45d0-a350-58dd27734082</Id>
+  <Version>1.0.4.0</Version>
+  <ProviderName>Gian Marco</ProviderName>
+  <DefaultLocale>it-IT</DefaultLocale>
+  <DisplayName DefaultValue="Relazioni Scientifiche"/>
+  <Description DefaultValue="Strumenti per la tesi: sommari dei capitoli, bibliografia, giurisprudenza, abbreviazioni e citazioni secondo le istruzioni della cattedra."/>
+  <IconUrl DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-64.png"/>
+  <SupportUrl DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/"/>
+  <AppDomains>
+    <AppDomain>https://effulgent-moonbeam-a555b4.netlify.app</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Document"/>
+  </Hosts>
+  <Requirements>
+    <Sets DefaultMinVersion="1.1">
+      <Set Name="WordApi" MinVersion="1.3"/>
+    </Sets>
+  </Requirements>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/taskpane.html?scheda=scientifiche"/>
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Document">
+        <DesktopFormFactor>
+          <FunctionFile resid="Commands.Url"/>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <CustomTab id="RS.Tab">
+              <Group id="RS.GBibliografia">
+                <Label resid="Bibliografia.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16"/>
+                  <bt:Image size="32" resid="Icon.32"/>
+                  <bt:Image size="80" resid="Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="RS.BibliografiaPannello">
+                  <Label resid="Bibliografia.Label"/>
+                  <Supertip>
+                    <Title resid="Bibliografia.Label"/>
+                    <Description resid="Bibliografia.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>RelazioniScientifiche</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Bibliografia"/>
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="RS.GGiurisprudenza">
+                <Label resid="Giurisprudenza.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16"/>
+                  <bt:Image size="32" resid="Icon.32"/>
+                  <bt:Image size="80" resid="Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="RS.GiurisprudenzaPannello">
+                  <Label resid="Giurisprudenza.Label"/>
+                  <Supertip>
+                    <Title resid="Giurisprudenza.Label"/>
+                    <Description resid="Giurisprudenza.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>RelazioniScientifiche</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Giurisprudenza"/>
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="RS.GNote">
+                <Label resid="Note.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16"/>
+                  <bt:Image size="32" resid="Icon.32"/>
+                  <bt:Image size="80" resid="Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="RS.Abbreviazioni">
+                  <Label resid="Abbreviazioni.Label"/>
+                  <Supertip>
+                    <Title resid="Abbreviazioni.Label"/>
+                    <Description resid="Abbreviazioni.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>RelazioniScientifiche</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Abbreviazioni"/>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="RS.Citazioni">
+                  <Label resid="Citazioni.Label"/>
+                  <Supertip>
+                    <Title resid="Citazioni.Label"/>
+                    <Description resid="Citazioni.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>RelazioniScientifiche</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Citazioni"/>
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="RS.GCapitoli">
+                <Label resid="Capitoli.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16"/>
+                  <bt:Image size="32" resid="Icon.32"/>
+                  <bt:Image size="80" resid="Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="RS.Sommari">
+                  <Label resid="Sommari.Label"/>
+                  <Supertip>
+                    <Title resid="Sommari.Label"/>
+                    <Description resid="Sommari.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>RelazioniScientifiche</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Sommari"/>
+                  </Action>
+                </Control>
+              </Group>
+              <Label resid="Tab.Label"/>
+            </CustomTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+
+    <Resources>
+      <bt:Images>
+        <bt:Image id="Icon.16" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-16.png"/>
+        <bt:Image id="Icon.32" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-32.png"/>
+        <bt:Image id="Icon.80" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/assets/icon-80.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="Commands.Url" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/commands.html"/>
+        <bt:Url id="Taskpane.Bibliografia" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/taskpane.html?scheda=scientifiche&amp;pannello=bibliografia"/>
+        <bt:Url id="Taskpane.Giurisprudenza" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/taskpane.html?scheda=scientifiche&amp;pannello=giurisprudenza"/>
+        <bt:Url id="Taskpane.Abbreviazioni" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/taskpane.html?scheda=scientifiche&amp;pannello=abbreviazioni"/>
+        <bt:Url id="Taskpane.Citazioni" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/taskpane.html?scheda=scientifiche&amp;pannello=citazioni"/>
+        <bt:Url id="Taskpane.Sommari" DefaultValue="https://effulgent-moonbeam-a555b4.netlify.app/taskpane.html?scheda=scientifiche&amp;pannello=sommari"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="Tab.Label" DefaultValue="Relazioni Scientifiche"/>
+        <bt:String id="Bibliografia.Label" DefaultValue="Bibliografia"/>
+        <bt:String id="Giurisprudenza.Label" DefaultValue="Giurisprudenza"/>
+        <bt:String id="Note.Label" DefaultValue="Abbreviazioni e Citazioni"/>
+        <bt:String id="Abbreviazioni.Label" DefaultValue="Abbreviazioni"/>
+        <bt:String id="Citazioni.Label" DefaultValue="Citazioni nelle Note"/>
+        <bt:String id="Capitoli.Label" DefaultValue="Capitoli"/>
+        <bt:String id="Sommari.Label" DefaultValue="Sommari dei Capitoli"/>
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="Bibliografia.Tip" DefaultValue="Sistema la bibliografia: ordine per cognome, Editore, Città, iniziali dei nomi, corsivi e maiuscoletto. Estrae i campi e aggiunge le opere citate nelle note."/>
+        <bt:String id="Giurisprudenza.Tip" DefaultValue="Sistema l'elenco delle decisioni: abbreviazioni della tabella, date per esteso, riviste in formula breve e in corsivo, ordine per data. Controlla ed estrae i campi."/>
+        <bt:String id="Abbreviazioni.Tip" DefaultValue="Controlla e corregge le abbreviazioni secondo la tabella della cattedra, nel testo e nelle note. Non tocca corsivi, titoli citati e virgolettato."/>
+        <bt:String id="Citazioni.Tip" DefaultValue="Controlla e formatta le citazioni nelle note: autori in maiuscoletto, titoli e riviste in corsivo, cit. in tondo. Le opere si riconoscono dalla bibliografia."/>
+        <bt:String id="Sommari.Tip" DefaultValue="Dopo il titolo di ogni capitolo scrive o aggiorna il sommario con i titoli dei paragrafi: SOMMARIO: 1. … – 2. … – 2.1. … Scegli con la spunta i capitoli."/>
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>

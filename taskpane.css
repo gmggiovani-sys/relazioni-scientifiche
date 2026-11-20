@@ -1,0 +1,115 @@
+:root {
+  --sfondo: #ffffff;
+  --testo: #1f1f1f;
+  --tenue: #616161;
+  --bordo: #d1d1d1;
+  --riga: #f5f5f5;
+  --accento: #2b579a;          /* blu di Word */
+  --accento-testo: #ffffff;
+  --giallo: #fff4ce;
+  --verde: #dff6dd;
+  --errore: #fde7e9;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sfondo: #1f1f1f;
+    --testo: #f0f0f0;
+    --tenue: #adadad;
+    --bordo: #474747;
+    --riga: #2a2a2a;
+    --accento: #6a9de6;
+    --accento-testo: #111111;
+    --giallo: #433519;
+    --verde: #1f3a1d;
+    --errore: #4a1f24;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 12px;
+  font: 13px/1.4 "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--testo);
+  background: var(--sfondo);
+}
+
+header { margin-bottom: 10px; }
+select, input[type=text] {
+  width: 100%;
+  padding: 5px 6px;
+  border: 1px solid var(--bordo);
+  border-radius: 4px;
+  font: inherit;
+  color: inherit;
+  background: var(--sfondo);
+}
+
+.nascosto { position: absolute; left: -9999px; }
+.spiega { margin: 0 0 10px; color: var(--tenue); }
+.esempio { display: block; margin-top: 4px; color: var(--testo); font-size: 12px; }
+.mc { font-variant: small-caps; }
+
+.campi { display: grid; gap: 8px; margin-bottom: 10px; }
+.campi label { display: grid; gap: 3px; font-weight: 600; font-size: 12px; }
+
+button {
+  font: inherit;
+  padding: 6px 12px;
+  border: 1px solid var(--bordo);
+  border-radius: 4px;
+  background: var(--sfondo);
+  color: inherit;
+  cursor: pointer;
+}
+button.primario { width: 100%; background: var(--accento); border-color: var(--accento); color: var(--accento-testo); font-weight: 600; }
+button.piccolo { padding: 3px 8px; font-size: 12px; }
+button:disabled { opacity: .55; cursor: default; }
+
+#risultati, #risultatiCit, #risultatiBib, .risultati { margin-top: 14px; }
+.passaggi { margin: 8px 0; }
+.passaggi summary { cursor: pointer; color: var(--tenue); font-size: 12px; }
+.colonna { display: grid; gap: 6px; margin-top: 6px; }
+.etichetta { font-weight: 600; font-size: 12px; width: 100%; }
+.due { margin-top: 6px; }
+.barra { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; }
+.filtro { font-size: 12px; margin-left: auto; }
+
+.elenco { list-style: none; margin: 0 0 10px; padding: 0; border-top: 1px solid var(--bordo); }
+.elenco li { border-bottom: 1px solid var(--bordo); padding: 7px 2px; }
+.elenco li.daFare { background: var(--giallo); }
+.elenco li.fatto { background: var(--verde); }
+.elenco li.dubbio { background: var(--giallo); }
+.due { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.due button { width: 100%; }
+.testa { display: flex; gap: 8px; align-items: flex-start; }
+.testa input { margin-top: 3px; }
+.titolo { flex: 1; min-width: 0; }
+.titolo strong { display: block; overflow-wrap: anywhere; }
+.titolo small { color: var(--tenue); }
+.azioni { display: flex; gap: 10px; margin: 4px 0 0 22px; }
+.azioni a { color: var(--accento); cursor: pointer; font-size: 12px; text-decoration: underline; }
+.anteprima { margin: 6px 0 0 22px; font-size: 12px; text-align: justify; overflow-wrap: anywhere; }
+.anteprima .vecchio { color: var(--tenue); margin-top: 4px; }
+
+#messaggio {
+  margin-top: 12px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  background: var(--riga);
+  white-space: pre-wrap;
+}
+#messaggio.errore { background: var(--errore); }
+[hidden] { display: none !important; }
+
+h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--tenue); margin: 16px 0 6px; }
+.tre { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin: 6px 0; }
+.tre button, .colonna button { width: 100%; }
+.file { display: grid; gap: 3px; font-weight: 600; font-size: 12px; }
+.file input { font: inherit; font-weight: 400; }
+.spunta { display: flex; gap: 6px; align-items: flex-start; font-size: 12px; margin: 6px 0; }
+#aggiungiFoto { width: 100%; }
+.scarica { display: block; margin-top: 8px; color: var(--accento); font-weight: 600; }
+.colonna button { text-align: left; }

@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relazioni Scientifiche</title>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <link rel="stylesheet" href="taskpane.css">
+</head>
+<body>
+  <header>
+    <label for="pannello" class="nascosto">Strumento</label>
+    <select id="pannello">
+      <optgroup label="Relazioni Scientifiche">
+      <option value="bibliografia">Bibliografia</option>
+      <option value="giurisprudenza">Giurisprudenza</option>
+      <option value="abbreviazioni">Abbreviazioni</option>
+      <option value="citazioni">Citazioni nelle note</option>
+      <option value="sommari">Sommari dei capitoli</option>
+      </optgroup>
+      <optgroup label="Relazioni Tecniche">
+        <option value="foto">Foto</option>
+        <option value="numeri">Numeri in lettere</option>
+      </optgroup>
+    </select>
+  </header>
+
+  <main>
+    <!-- ===== Sommari dei capitoli ===== -->
+    <section id="sommari" class="pannello">
+      <p class="spiega">Dopo il titolo di ogni capitolo scrive il sommario con i titoli dei paragrafi:
+        <span class="esempio"><span class="mc">Sommario:</span> 1. … – 2. … – 2.1. …</span></p>
+
+      <div class="campi">
+        <label>Dopo lo stile
+          <input id="stileTitolo" type="text" value="Titolo 1" title="Stile del titolo del capitolo. Vuota: lo stile del paragrafo dove si trova il cursore.">
+        </label>
+        <label>Stile del sommario
+          <input id="stileSommario" type="text" value="Sommario Capitolo" title="Se non esiste si crea: corpo 10, interlinea singola, giustificato.">
+        </label>
+      </div>
+
+      <button id="analizza" class="primario">Cerca i capitoli</button>
+
+      <div id="risultati" hidden>
+        <div class="barra">
+          <button id="tutte" class="piccolo">Tutte</button>
+          <button id="nessuna" class="piccolo">Nessuna</button>
+          <label class="filtro"><input id="soloDaFare" type="checkbox" checked> Solo da creare o aggiornare</label>
+        </div>
+        <ul id="elenco" class="elenco"></ul>
+        <button id="scrivi" class="primario">Crea o aggiorna i sommari spuntati</button>
+      </div>
+    </section>
+
+    <!-- ===== Bibliografia ===== -->
+    <section id="bibliografia" class="pannello" hidden>
+      <p class="spiega">Sulle voci con lo stile indicato: ordine alfabetico per cognome, Editore, Città,
+        iniziale puntata del nome, titoli e riviste in <em>corsivo</em>, autori e curatori in <span class="mc">maiuscoletto</span>.</p>
+
+      <div class="campi">
+        <label>Stile delle voci
+          <input id="stileVoci" type="text" value="Biblio">
+        </label>
+      </div>
+
+      <button id="sistemaBib" class="primario">Sistema bibliografia</button>
+
+      <details class="passaggi">
+        <summary>Passaggi singoli</summary>
+        <div class="colonna">
+          <button id="campiBib">1. Editore, Città e iniziali</button>
+          <button id="ordinaBib">2. Ordina per autore</button>
+          <button id="corsiviBib">3. Corsivi e maiuscoletto</button>
+        </div>
+      </details>
+
+      <div class="due">
+        <button id="estraiBib">Estrai campi</button>
+        <button id="daNoteBib">Aggiungi dalle note</button>
+      </div>
+
+      <div id="risultatiBib" hidden>
+        <div class="barra">
+          <span id="titoloBib" class="etichetta"></span>
+          <button id="tutteBib" class="piccolo">Tutte</button>
+          <button id="nessunaBib" class="piccolo">Nessuna</button>
+          <label class="filtro" id="filtroBibLabel"><input id="soloDubbieBib" type="checkbox" checked> Solo da controllare</label>
+          <button id="copiaBib" class="piccolo">Copia per Excel</button>
+        </div>
+        <ul id="elencoBib" class="elenco"></ul>
+        <button id="aggiungiBib" class="primario">Aggiungi le voci spuntate</button>
+      </div>
+    </section>
+
+    <!-- ===== Giurisprudenza ===== -->
+    <section id="giurisprudenza" class="pannello" hidden>
+      <p class="spiega">Sulle decisioni con lo stile indicato: organi e sezioni come nella tabella delle abbreviazioni
+        (Cass. pen., Sez. VI, Sez. Un., Cons. Stato), date con il mese per esteso, riviste in formula breve e in
+        <em>corsivo</em>, ordine per data dentro ogni blocco.</p>
+
+      <div class="campi">
+        <label>Stile delle decisioni
+          <input id="stileGiur" type="text" value="Giurisprudenza">
+        </label>
+      </div>
+
+      <button id="sistemaGiur" class="primario">Sistema giurisprudenza</button>
+
+      <details class="passaggi">
+        <summary>Passaggi singoli</summary>
+        <div class="colonna">
+          <button id="normalizzaGiur">Normalizza (abbreviazioni, date, riviste)</button>
+          <button id="ordinaGiur">Ordina per data</button>
+          <button id="corsiviGiur">Corsivi delle riviste</button>
+        </div>
+      </details>
+
+      <div class="due">
+        <button id="controllaGiur">Controlla voci</button>
+        <button id="estraiGiur">Estrai campi</button>
+      </div>
+
+      <div id="risultatiGiur" class="risultati" hidden>
+        <div class="barra">
+          <span id="titoloGiur" class="etichetta"></span>
+          <label class="filtro"><input id="soloDubbieGiur" type="checkbox" checked> Solo da controllare</label>
+          <button id="copiaGiur" class="piccolo">Copia per Excel</button>
+        </div>
+        <ul id="elencoGiur" class="elenco"></ul>
+      </div>
+    </section>
+
+    <!-- ===== Abbreviazioni ===== -->
+    <section id="abbreviazioni" class="pannello" hidden>
+      <p class="spiega">Forme diverse dalla tabella delle abbreviazioni (Cass. Pen., Cons. St., sez., co. 2, l. n.,
+        c. p., cit.., cod. pen.…). Non tocca corsivi, titoli di opere citate e virgolettato («…», “…”, "…").</p>
+
+      <div class="campi">
+        <label>Dove
+          <select id="ambitoAbbr">
+            <option value="documento">Intero documento (testo e note)</option>
+            <option value="selezione">Testo selezionato (con le sue note)</option>
+            <option value="stile">Paragrafi con lo stile di quello selezionato</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="due">
+        <button id="controllaAbbr" class="primario">Controlla</button>
+        <button id="correggiAbbr">Correggi le sicure</button>
+      </div>
+
+      <div id="risultatiAbbr" class="risultati" hidden>
+        <div class="barra">
+          <button id="tutteAbbr" class="piccolo">Tutte</button>
+          <button id="nessunaAbbr" class="piccolo">Nessuna</button>
+          <label class="filtro"><input id="soloDubbieAbbr" type="checkbox"> Solo da decidere</label>
+        </div>
+        <ul id="elencoAbbr" class="elenco"></ul>
+        <button id="correggiScelteAbbr" class="primario">Correggi le voci spuntate</button>
+      </div>
+    </section>
+
+    <!-- ===== Citazioni nelle note ===== -->
+    <section id="citazioni" class="pannello" hidden>
+      <p class="spiega">Autori e curatori in <span class="mc">maiuscoletto</span>; titoli, riviste e volumi in
+        <em>corsivo</em>; <em>ivi</em> e <em>ibidem</em> in corsivo; cit. e op. cit. in tondo.
+        Le opere si riconoscono dalla bibliografia; il testo non cambia e il virgolettato non si tocca.</p>
+
+      <div class="campi">
+        <label>Stile della bibliografia
+          <input id="stileBiblio" type="text" value="Biblio">
+        </label>
+        <label>Dove
+          <select id="ambitoCit">
+            <option value="tutte">Tutte le note</option>
+            <option value="selezione">Note richiamate nel testo selezionato</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="due">
+        <button id="controllaCit" class="primario">Controlla</button>
+        <button id="formattaCit">Formatta tutto</button>
+      </div>
+
+      <div id="risultatiCit" hidden>
+        <div class="barra">
+          <button id="tutteCit" class="piccolo">Tutte</button>
+          <button id="nessunaCit" class="piccolo">Nessuna</button>
+        </div>
+        <ul id="elencoCit" class="elenco"></ul>
+        <button id="formattaScelteCit" class="primario">Formatta le parti spuntate</button>
+      </div>
+    </section>
+
+    <!-- ===== Foto (Relazioni Tecniche) ===== -->
+    <section id="foto" class="pannello" hidden>
+      <p class="spiega">Tabelle di foto con didascalia "Foto N – nome del file", numerate in tutto il documento.</p>
+
+      <h2>Inserisci foto</h2>
+      <label class="file">Foto da inserire
+        <input id="fileFoto" type="file" accept="image/*,.tif,.tiff" multiple>
+      </label>
+      <label class="spunta"><input id="riduciFoto" type="checkbox" checked> Riduci le foto (lato lungo 1600 px): documento più leggero</label>
+      <div class="tre">
+        <button id="ins1">1 per riga</button>
+        <button id="ins2">2 per riga</button>
+        <button id="ins4">4 per riga</button>
+      </div>
+      <button id="aggiungiFoto">Aggiungi alla tabella sotto il cursore</button>
+
+      <h2>Tabella sotto il cursore</h2>
+      <div class="tre">
+        <button id="lay1">1 per riga</button>
+        <button id="lay2">2 per riga</button>
+        <button id="lay4">4 per riga</button>
+      </div>
+      <div class="due">
+        <button id="indietro">◀ Sposta indietro</button>
+        <button id="avanti">Sposta avanti ▶</button>
+      </div>
+      <div class="due">
+        <button id="riorganizza">Riorganizza</button>
+        <button id="rinumera">Rinumera foto</button>
+      </div>
+
+      <h2>Documento</h2>
+      <div class="colonna">
+        <button id="capitolo">Crea capitolo foto</button>
+        <button id="comprimi">Comprimi le immagini</button>
+        <button id="esportaPdf">Esporta in PDF</button>
+      </div>
+      <a id="scaricaPdf" class="scarica" hidden>Scarica il PDF</a>
+    </section>
+
+    <!-- ===== Numeri in lettere (Relazioni Tecniche) ===== -->
+    <section id="numeri" class="pannello" hidden>
+      <p class="spiega">Metti il cursore su un importo (o selezionalo): diventa "1.234,50" seguito dalla forma
+        in lettere in <em>corsivo</em>. Rieseguendo il comando, la parte in lettere si sostituisce.</p>
+      <div class="colonna">
+        <button id="numEuro">Euro: (milleduecentotrentaquattro euro e cinquanta centesimi)</button>
+        <button id="numFin">Finanziario: (milleduecentotrentaquattro/50)</button>
+        <button id="numAmm">Amministrativo: (Euro milleduecentotrentaquattro/50)</button>
+      </div>
+    </section>
+
+    <div id="messaggio" role="status" hidden></div>
+  </main>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>

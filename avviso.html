@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relazioni</title>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <style>
+    :root { --sfondo: #fff; --testo: #1f1f1f; --accento: #2b579a; --accento-testo: #fff; }
+    @media (prefers-color-scheme: dark) { :root { --sfondo: #1f1f1f; --testo: #f0f0f0; --accento: #6a9de6; --accento-testo: #111; } }
+    body { margin: 0; padding: 16px; font: 14px/1.45 "Segoe UI", -apple-system, sans-serif; background: var(--sfondo); color: var(--testo); }
+    p { white-space: pre-wrap; margin: 0 0 16px; }
+    button { padding: 6px 20px; border: 0; border-radius: 4px; background: var(--accento); color: var(--accento-testo); font: inherit; font-weight: 600; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <p id="t"></p>
+  <button id="ok">OK</button>
+  <script>
+    document.getElementById("t").textContent = new URLSearchParams(location.search).get("t") || "";
+    Office.onReady(function () {
+      document.getElementById("ok").onclick = function () { Office.context.ui.messageParent("ok"); };
+      document.getElementById("ok").focus();
+    });
+  </script>
+</body>
+</html>
