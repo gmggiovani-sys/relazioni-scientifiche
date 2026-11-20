@@ -9,7 +9,7 @@
            xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
            xsi:type="TaskPaneApp">
   <Id>e2d46e6b-ba25-48bb-9c93-a3ad78924273</Id>
-  <Version>1.0.1.0</Version>
+  <Version>1.0.2.0</Version>
   <ProviderName>Gian Marco</ProviderName>
   <DefaultLocale>it-IT</DefaultLocale>
   <DisplayName DefaultValue="Relazioni Tecniche"/>
@@ -224,9 +224,8 @@
                     <bt:Image size="32" resid="Icon.32"/>
                     <bt:Image size="80" resid="Icon.80"/>
                   </Icon>
-                  <Action xsi:type="ShowTaskpane">
-                    <TaskpaneId>RelazioniTecniche</TaskpaneId>
-                    <SourceLocation resid="Taskpane.Foto"/>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>comprimi</FunctionName>
                   </Action>
                 </Control>
                 <Control xsi:type="Button" id="RT.Pdf">
@@ -242,7 +241,7 @@
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
                     <TaskpaneId>RelazioniTecniche</TaskpaneId>
-                    <SourceLocation resid="Taskpane.Foto"/>
+                    <SourceLocation resid="Taskpane.Pdf"/>
                   </Action>
                 </Control>
               </Group>
@@ -314,6 +313,7 @@
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Commands.Url" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/commands.html"/>
+        <bt:Url id="Taskpane.Pdf" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/taskpane.html?scheda=tecniche&amp;pannello=foto&amp;azione=pdf"/>
         <bt:Url id="Taskpane.Foto" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/taskpane.html?scheda=tecniche&amp;pannello=foto"/>
       </bt:Urls>
       <bt:ShortStrings>
@@ -345,8 +345,8 @@
         <bt:String id="Sposta.Tip" DefaultValue="Con il cursore su una foto o sulla sua didascalia: la scambia con la foto precedente o successiva, poi rinumera."/>
         <bt:String id="Rinumera.Tip" DefaultValue='Rinumera in sequenza le didascalie "Foto N" di tutte le tabelle del documento.'/>
         <bt:String id="Capitolo.Tip" DefaultValue="Inserisce il titolo DOCUMENTAZIONE FOTOGRAFICA (Titolo 1) dopo il paragrafo corrente o sopra la tabella delle foto."/>
-        <bt:String id="Comprimi.Tip" DefaultValue="Apre il pannello: riduce le immagini del documento (lato lungo 1600 px, larghezza massima 15 cm)."/>
-        <bt:String id="Pdf.Tip" DefaultValue="Apre il pannello: Word prepara il PDF del documento da scaricare."/>
+        <bt:String id="Comprimi.Tip" DefaultValue="Riduce le immagini del documento (lato lungo 1600 px, larghezza massima 15 cm): documento più leggero."/>
+        <bt:String id="Pdf.Tip" DefaultValue="Word prepara il PDF del documento e lo scarica (nel pannello, che si apre da solo)."/>
         <bt:String id="Euro.Tip" DefaultValue="Il numero sotto il cursore diventa 1.234,50 (milleduecentotrentaquattro euro e cinquanta centesimi)."/>
         <bt:String id="Fin.Tip" DefaultValue="Il numero sotto il cursore diventa 1.234,50 (milleduecentotrentaquattro/50)."/>
         <bt:String id="Amm.Tip" DefaultValue="Il numero sotto il cursore diventa 1.234,50 (Euro milleduecentotrentaquattro/50)."/>
