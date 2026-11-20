@@ -11,7 +11,7 @@ const re = s => new RegExp(s.replace(/\\b/g, W), "gu");
 
 // L'occorrenza sta nel titolo di un'opera citata: nello stesso tratto di citazione
 // (fino a ";" o alla fine della frase) segue ", in …" o ", cit."
-const RE_FINE_TRATTO = /;|\.\s+(?=[A-ZÀ-Ý«])/g;
+const RE_FINE_TRATTO = /;|(?<!(?:^|[\s,(.])[A-Z])\.\s+(?=[A-ZÀ-Ý«])/g;
 const RE_SEGNO_CITAZIONE = /,\s(?:in\s|cit\.|op\.\scit\.)/;
 
 function inTitoloCitato(t, fine) {
@@ -128,12 +128,73 @@ const REGOLE = [
   D("pag./pagg. → p./pp. (le istruzioni usano p./pp.)", "\\bpagg?\\.(?=\\s?[0-9])",
     m => (m[0].startsWith("pagg") ? "pp." : "p.")),
 
-  // leggi: forma della tabella ("legge n. 10/1994"; con l'iniziale maiuscola se era maiuscola)
-  L("legge n.", "(?<![.\\p{L}\\p{N}_])([lL])\\.\\s?(?=n\\.\\s?[0-9])", m => (m[1] === "L" ? "Legge " : "legge ")),
+  // anno della rivista non tra parentesi: "Economica, 4 (1937), 386" → "Economica, 4, 1937, 386"
+  {
+    nome: "anno della rivista senza parentesi",
+    re: /(?<=,\s[0-9]{1,4})\s\(((?:18|19|20)[0-9]{2})\)(?=[,.;]|\s|$)/gu,
+    nuovo: m => ", " + m[1]
+  },
+  {
+    nome: "anno della rivista senza parentesi (decidi tu)",
+    re: /(?<=(?<![\p{L}\p{N}_])in\s[A-ZÀ-Ý][^,;()«»“”]{1,60}?)\s\(((?:18|19|20)[0-9]{2})\)(?=,)/gu,
+    nuovo: m => ", " + m[1],
+    dubbia: true
+  },
+
+  // leggi: "legge 7 agosto 1990, n. 241" la prima volta, poi "l. n. 241/1990" (istruzioni);
+  // "l. n. 241" senza anno → "legge n. 241" (tabella). Con l'iniziale maiuscola se era maiuscola
+  L("legge n.", "(?<![.\\p{L}\\p{N}_])([lL])\\.\\s?(?=n\\.\\s?[0-9]+(?![0-9/]))", m => (m[1] === "L" ? "Legge " : "legge ")),
   L("legge + data", "(?<![.\\p{L}\\p{N}_])([lL])\\.\\s?(?=[0-9]{1,2}°?\\s(?:" + MESI + ")\\s[0-9]{4})",
     m => (m[1] === "L" ? "Legge " : "legge ")),
-  L("legge n. (numero/anno)", "(?<![.\\p{L}\\p{N}_])([lL])\\.\\s?(?=[0-9]+/[0-9]{4})", m => (m[1] === "L" ? "Legge n. " : "legge n. "))
+  L("l. n. (numero/anno)", "(?<![.\\p{L}\\p{N}_])([lL])\\.\\s?(?=[0-9]+/[0-9]{4})", m => m[1] + ". n. ")
 ];
+
+// ---------- leggi: prima citazione per esteso, poi abbreviata ----------
+
+// "legge 7 agosto 1990, n. 241" (anche "l. 7 agosto 1990, n. 241")
+const RE_LEGGE_ESTESA = new RegExp(
+  "(?<![\\p{L}\\p{N}_.])(?:legge|Legge|l\\.|L\\.)\\s?[0-9]{1,2}°?\\s(?:" + MESI + ")\\s([0-9]{4}),?\\s?n\\.\\s?([0-9]+)(?![\\p{L}\\p{N}_])", "gu");
+
+// "l. n. 241/1990", "legge n. 241/1990", "l. 241/1990", "legge n. 241 del 1990"
+const RE_LEGGE_BREVE =
+  /(?<![\p{L}\p{N}_.])(?:legge|Legge|l\.|L\.)\s?(?:n\.\s?)?([0-9]+)(?:\/|\sdel\s)([0-9]{4})(?![\p{L}\p{N}_])/gu;
+
+// Testi nell'ordine di lettura (testo e note): la prima citazione di ogni legge va per esteso,
+// con data e numero; le successive in forma abbreviata ("l. n. 241/1990")
+export function citazioniLeggi(testi) {
+  const res = [];
+  const viste = new Set();
+
+  for (const t of testi) {
+    const occ = [];
+    res.push(occ);
+    if (!t) continue;
+
+    const citazione = zoneCitazione(t);
+    const trovate = [];
+    for (const m of t.matchAll(RE_LEGGE_ESTESA)) trovate.push([m, true, m[2] + "/" + m[1]]);
+    for (const m of t.matchAll(RE_LEGGE_BREVE)) trovate.push([m, false, m[1] + "/" + m[2]]);
+
+    for (const [m, estesa, chiave] of trovate.sort((a, b) => a[0].index - b[0].index)) {
+      if (citazione[m.index]) continue;
+      const prima = !viste.has(chiave);
+      viste.add(chiave);
+
+      if (prima && !estesa)
+        occ.push({
+          idx: m.index, len: m[0].length, trovato: m[0], nuovo: null, incerta: false,
+          regola: "prima citazione della legge n. " + chiave + ": va per esteso, con data e numero (es. legge 7 agosto 1990, n. 241)"
+        });
+      else if (!prima && estesa)
+        occ.push({
+          idx: m.index, len: m[0].length, trovato: m[0], nuovo: "l. n. " + chiave, incerta: true,
+          regola: "legge già citata: forma abbreviata (l. n. " + chiave + ")"
+        });
+    }
+  }
+
+  return res;
+}
 
 // Forme da correggere o segnalare, senza sovrapposizioni e fuori dal virgolettato («…», “…”, "…")
 export function cerca(testo) {

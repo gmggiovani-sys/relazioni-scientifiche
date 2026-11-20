@@ -17,16 +17,18 @@ const breve = t => (t.length > 60 ? t.slice(0, 60) + "…" : t);
 
 const normalizza = (context, stile, avanzamento) => sostituisci(context, stile, G.normalizzazioni, avanzamento);
 
-// Per data della decisione dentro ogni blocco (Cassazione, Corte cost., Tribunali…),
+// Per data (soloData: tutte le decisioni in un unico ordine cronologico, come chiedono le istruzioni),
+// oppure per organo e data: per data dentro ogni blocco (Cassazione, Corte cost., Tribunali…),
 // lasciando i blocchi nell'ordine in cui sono nel documento
-function chiavi(testi) {
+const chiavi = soloData => testi => {
   const parsed = testi.map(G.parse);
   const gruppi = [];
   for (const p of parsed) if (!gruppi.includes(p.gruppo)) gruppi.push(p.gruppo);
-  return parsed.map(p => G.chiaveOrdinamento(p, gruppi));
-}
+  return parsed.map(p => G.chiaveOrdinamento(p, gruppi, soloData));
+};
 
-const ordina = (context, stile) => ordinaVoci(context, stile, chiavi, "la giurisprudenza");
+const ordina = (context, stile, soloData) => ordinaVoci(context, stile, chiavi(soloData), "la giurisprudenza");
+const nomeOrdine = soloData => (soloData ? "per data" : "per organo e data");
 
 // Azzera il corsivo e lo applica ai nomi delle riviste e delle banche dati
 async function corsivi(context, stile, avanzamento) {
@@ -102,16 +104,16 @@ function rapporto(testi) {
 
 const fase = (avanzamento, cosa) => avanzamento && ((f, t) => avanzamento(cosa, f, t));
 
-export async function sistema(stile, avanzamento) {
+export async function sistema(stile, avanzamento, soloData = true) {
   return Word.run(async context => {
     // prima si ordina, poi si modifica il testo, infine i corsivi
-    const spostate = await ordina(context, stile);
+    const spostate = await ordina(context, stile, soloData);
     const norm = await normalizza(context, stile, fase(avanzamento, "Normalizzazione"));
     const c = await corsivi(context, stile, fase(avanzamento, "Corsivi"));
     const { testi } = await voci(context, stile);
     return "Giurisprudenza sistemata (stile \"" + stile + "\").\n\n" +
            "Voci normalizzate (abbreviazioni, date, riviste): " + norm + "\n" +
-           "Voci spostate in ordine cronologico: " + spostate + "\n" +
+           "Voci spostate in ordine " + nomeOrdine(soloData) + ": " + spostate + "\n" +
            "Riviste in corsivo: " + c + "\n\n" + rapporto(testi);
   });
 }
@@ -120,10 +122,10 @@ export async function soloNormalizza(stile, avanzamento) {
   return Word.run(async context => "Voci normalizzate: " + await normalizza(context, stile, fase(avanzamento, "Normalizzazione")));
 }
 
-export async function soloOrdina(stile) {
+export async function soloOrdina(stile, soloData = true) {
   return Word.run(async context => {
-    const n = await ordina(context, stile);
-    if (n === 0) return "Le voci sono già in ordine cronologico.";
+    const n = await ordina(context, stile, soloData);
+    if (n === 0) return "Le voci sono già in ordine " + nomeOrdine(soloData) + ".";
     await corsivi(context, stile, null);          // le voci spostate sono state riscritte
     return "Voci spostate: " + n + " (con i corsivi delle riviste riapplicati).";
   });

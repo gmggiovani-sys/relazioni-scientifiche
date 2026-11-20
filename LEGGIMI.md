@@ -4,8 +4,9 @@ Versione "Office Add-in" degli strumenti della scheda Relazioni Scientifiche. Fu
 Word per Windows e Word sul web. I file del programma stanno su GitHub Pages; i documenti restano sul
 computer e non passano da lì.
 
-Contiene: **Bibliografia**, **Giurisprudenza**, **Abbreviazioni**, **Citazioni nelle note** e **Sommari dei capitoli**, come la scheda Relazioni Scientifiche della versione Windows.
-abbreviazioni, citazioni) si aggiungono man mano.
+Contiene: **Bibliografia** (con iniziali dei nomi e «e» tra gli ultimi due autori), **Giurisprudenza**,
+**Abbreviazioni**, **Citazioni nelle note** (con «Autori nelle note»), **Sommari dei capitoli** e
+**Impaginazione**, come la scheda Relazioni Scientifiche della versione Windows.
 
 ## Due add-in, stessi file
 
@@ -62,7 +63,10 @@ Con entrambe le versioni installate vedrai due schede con lo stesso nome: va ben
 - Le finestre con le spunte sono nel pannello laterale.
 - Non c'è un unico "Annulla" per tutto il comando: ogni modifica si annulla a parte.
   Con le revisioni attive tutto resta comunque rivedibile.
-- Il maiuscoletto richiede Word per Mac 16.99 o successivo; nelle versioni precedenti il comando avvisa.
+- Il maiuscoletto richiede Word per Mac 16.99 o successivo; nelle versioni precedenti si usa lo stile carattere "Maiuscoletto".
+- L'elenco delle iniziali sta nel pannello (Bibliografia → Elenco delle iniziali), non in un file.
+- Impaginazione: margini e formato del foglio si controllano solo nelle versioni di Word che li danno agli
+  add-in (altrimenti il pannello lo dice); la numerazione delle note non si legge e va controllata a mano.
 
 ## File
 
@@ -80,7 +84,9 @@ Con entrambe le versioni installate vedrai due schede con lo stesso nome: va ben
 | `src/foto.js`, `src/immagini.js` | Relazioni Tecniche: tabelle di foto, riduzione delle immagini, PDF |
 | `src/numeri.js`, `src/parser/numeri.js` | Numeri in lettere |
 | `src/comandi.js`, `avviso.html` | pulsanti della scheda che lavorano senza pannello, e i loro messaggi |
-| `src/citazioni.js` | Citazioni nelle note (lettura delle note, controllo, formattazione) |
+| `src/citazioni.js` | Citazioni nelle note (lettura delle note, controllo, formattazione, autori nelle note) |
+| `src/impaginazione.js` | Impaginazione (margini, carattere, interlinea, rientro, note) |
+| `src/parser/iniziali.js` | iniziali dei nomi degli autori e «e» tra gli ultimi due (elenco predefinito compreso) |
 | `src/parser/` | regole di bibliografia, citazioni e giurisprudenza (senza Word), come nella versione Windows |
 | `src/word.js`, `src/elenco.js` | funzioni comuni: ricerca nel documento, elenco con le spunte |
 | `commands.html` | richiesto da Word per i pulsanti della scheda |

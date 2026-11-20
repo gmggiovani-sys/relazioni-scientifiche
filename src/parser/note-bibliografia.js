@@ -10,8 +10,9 @@ const RE_DECISIONE =
   /\b(?:Cass\.|Corte cost\.|Cons\.\s?St|Trib\.|App\.|Pret\.|T\.A\.R\.|Corte conti|Corte giust\.|Corte EDU|C\.\s?Cost\.)/;
 
 // solo nomi separati da virgole ("Bondi, ", "B. Romano, Marandola, ")
-const RE_SOLO_NOMI =
-  /^\s*(?:(?:[A-Z]\.\s)?(?:D’|D'|De |Di |Della |Del )?[A-ZÀ-Ý][a-zà-ÿ’'\-]+(?:\s[A-ZÀ-Ý][a-zà-ÿ’'\-]+)?,\s)*(?:[A-Z]\.\s|D’|D'|De |Di |Della |Del )?$/;
+const RE_SOLO_NOMI = new RegExp(
+  "^\\s*(?:(?:" + B.INIZIALI + "\\s)?(?:D’|D'|De |Di |Della |Del )?[A-ZÀ-Ý][a-zà-ÿ’'\\-]+(?:\\s[A-ZÀ-Ý][a-zà-ÿ’'\\-]+)?(?:,\\s|\\se\\s))*" +
+  "(?:" + B.INIZIALI + "\\s|D’|D'|De |Di |Della |Del )?$");
 
 const ATTACCHI = new Set([
   "Secondo", "Così", "Anche", "Cfr", "Vedi", "Come", "Contra", "Inoltre", "Ancora", "Sempre",

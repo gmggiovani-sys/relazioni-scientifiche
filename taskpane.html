@@ -17,6 +17,7 @@
       <option value="abbreviazioni">Abbreviazioni</option>
       <option value="citazioni">Citazioni nelle note</option>
       <option value="sommari">Sommari dei capitoli</option>
+      <option value="impaginazione">Impaginazione</option>
       </optgroup>
       <optgroup label="Relazioni Tecniche">
         <option value="foto">Foto</option>
@@ -37,6 +38,13 @@
         </label>
         <label>Stile del sommario
           <input id="stileSommario" type="text" value="Sommario Capitolo" title="Se non esiste si crea: corpo 10, interlinea singola, giustificato.">
+        </label>
+        <label>Livelli
+          <select id="profondita" title="Quanti livelli di titoli entrano nel sommario">
+            <option value="1">1 livello (Titolo 2)</option>
+            <option value="2">2 livelli (anche Titolo 3)</option>
+            <option value="0">Tutti i livelli</option>
+          </select>
         </label>
       </div>
 
@@ -72,6 +80,19 @@
           <button id="campiBib">1. Editore, Città e iniziali</button>
           <button id="ordinaBib">2. Ordina per autore</button>
           <button id="corsiviBib">3. Corsivi e maiuscoletto</button>
+          <button id="nomiBib">4. Nomi degli autori (iniziali, «e»)</button>
+        </div>
+      </details>
+
+      <details class="passaggi">
+        <summary>Elenco delle iniziali</summary>
+        <p class="spiega">Una riga per autore: <code>Cognome = F.</code>; <code>Cognome = F. ?</code> se è da verificare;
+          <code>Cognome | inizio del titolo = L.</code> per autori diversi con lo stesso cognome. Vale per "Nomi degli autori"
+          qui e per "Autori nelle note".</p>
+        <textarea id="elencoIniziali" rows="10" spellcheck="false" wrap="off"></textarea>
+        <div class="due">
+          <button id="salvaIniziali">Salva l'elenco</button>
+          <button id="ripristinaIniziali">Elenco predefinito</button>
         </div>
       </details>
 
@@ -90,6 +111,7 @@
         </div>
         <ul id="elencoBib" class="elenco"></ul>
         <button id="aggiungiBib" class="primario">Aggiungi le voci spuntate</button>
+        <button id="applicaNomiBib" class="primario">Correggi le voci spuntate</button>
       </div>
     </section>
 
@@ -97,11 +119,17 @@
     <section id="giurisprudenza" class="pannello" hidden>
       <p class="spiega">Sulle decisioni con lo stile indicato: organi e sezioni come nella tabella delle abbreviazioni
         (Cass. pen., Sez. VI, Sez. Un., Cons. Stato), date con il mese per esteso, riviste in formula breve e in
-        <em>corsivo</em>, ordine per data dentro ogni blocco.</p>
+        <em>corsivo</em>, ordine per data (o per organo e data).</p>
 
       <div class="campi">
         <label>Stile delle decisioni
           <input id="stileGiur" type="text" value="Giurisprudenza">
+        </label>
+        <label>Ordine
+          <select id="ordineGiur" title="Per data: elenco ordinato cronologicamente, come chiedono le istruzioni">
+            <option value="data">Per data</option>
+            <option value="organo">Per organo e data</option>
+          </select>
         </label>
       </div>
 
@@ -111,7 +139,7 @@
         <summary>Passaggi singoli</summary>
         <div class="colonna">
           <button id="normalizzaGiur">Normalizza (abbreviazioni, date, riviste)</button>
-          <button id="ordinaGiur">Ordina per data</button>
+          <button id="ordinaGiur">Ordina</button>
           <button id="corsiviGiur">Corsivi delle riviste</button>
         </div>
       </details>
@@ -165,7 +193,7 @@
     <!-- ===== Citazioni nelle note ===== -->
     <section id="citazioni" class="pannello" hidden>
       <p class="spiega">Autori e curatori in <span class="mc">maiuscoletto</span>; titoli, riviste e volumi in
-        <em>corsivo</em>; <em>ivi</em> e <em>ibidem</em> in corsivo; cit. e op. cit. in tondo.
+        <em>corsivo</em>; <em>ivi</em>, <em>ibidem</em>, <em>cit.</em> e <em>op. cit.</em> in corsivo.
         Le opere si riconoscono dalla bibliografia; il testo non cambia e il virgolettato non si tocca.</p>
 
       <div class="campi">
@@ -179,10 +207,14 @@
           </select>
         </label>
       </div>
+      <label class="spunta"><input id="citCorsivo" type="checkbox" checked> cit. e op. cit. in corsivo (senza spunta: in tondo)</label>
 
       <div class="due">
         <button id="controllaCit" class="primario">Controlla</button>
         <button id="formattaCit">Formatta tutto</button>
+      </div>
+      <div class="colonna">
+        <button id="autoriCit">Autori nelle note (iniziali, «e»)</button>
       </div>
 
       <div id="risultatiCit" hidden>
@@ -192,6 +224,25 @@
         </div>
         <ul id="elencoCit" class="elenco"></ul>
         <button id="formattaScelteCit" class="primario">Formatta le parti spuntate</button>
+        <button id="applicaAutoriCit" class="primario" hidden>Correggi le voci spuntate</button>
+      </div>
+    </section>
+
+    <!-- ===== Impaginazione ===== -->
+    <section id="impaginazione" class="pannello" hidden>
+      <p class="spiega">Come chiedono le istruzioni: foglio A4; margini 4 cm (superiore), 3,5 (inferiore), 3,5 (sinistro),
+        3 (destro); testo in Times New Roman o Garamond 12 (o 14), interlinea 1,5, rientro 1 cm;
+        note 10 (o 11), interlinea singola. Titoli, tabelle, sommari, bibliografia e paragrafi centrati non si controllano.</p>
+
+      <button id="controllaImp" class="primario">Controlla l'impaginazione</button>
+
+      <div id="risultatiImp" hidden>
+        <div class="barra">
+          <button id="tutteImp" class="piccolo">Tutte</button>
+          <button id="nessunaImp" class="piccolo">Nessuna</button>
+        </div>
+        <ul id="elencoImp" class="elenco"></ul>
+        <button id="correggiImp" class="primario">Correggi le voci spuntate</button>
       </div>
     </section>
 

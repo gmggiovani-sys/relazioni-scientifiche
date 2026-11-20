@@ -1,5 +1,5 @@
 // Formattazione delle citazioni nelle note secondo le istruzioni della cattedra:
-// autore e curatore in MAIUSCOLETTO; titolo, rivista e volume in corsivo; cit. e op. cit. in tondo;
+// autore e curatore in MAIUSCOLETTO; titolo, rivista e volume in corsivo; cit. e op. cit. in corsivo (o in tondo, a scelta);
 // ivi, ibidem in corsivo; ID. in maiuscoletto. Il testo non cambia; le citazioni testuali tra «» non si toccano.
 // Porting di CitazioniParser.cs (versione Windows).
 
@@ -32,7 +32,10 @@ export function opere(vociBibliografia) {
   return res;
 }
 
-// Rinvii: "cit." e "op. cit." in tondo (scelta della tesi), ivi e ibidem in corsivo, ID. in maiuscoletto
+// Istruzioni della cattedra: "cit." e "op. cit." in corsivo. Con false restano in tondo
+export const opzioni = { citInCorsivo: true };
+
+// Rinvii: "cit." e "op. cit." in corsivo (o in tondo), ivi e ibidem in corsivo, ID. in maiuscoletto
 const RE_CIT = /(?<=,\s?)(?:op\.\s?cit\.|cit\.)/g;
 const RE_RINVIO = /(?:(?<=^\s*)|(?<=[;.]\s)|(?<=,\s))(?:Ibidem|ibidem|Ibid\.|ibid\.|Ivi|ivi)(?=[\s,.;:]|$)/g;
 const RE_ID = /(?:(?<=^\s*)|(?<=[;.]\s))(?:Id\.|ID\.|Idem|IDEM)(?=[\s,])/g;
@@ -48,7 +51,8 @@ const RE_DATA_ESTESA = new RegExp("\\b[0-9]{1,2}°?\\s(?:" + MESI + ")\\s[0-9]{4
 
 const RE_DOPO_AUTORE = /^(?:\s\((?:a cura di|diretta da|coordinato da)\))?,\s/;
 
-const RE_FINE_TRATTO = /;|\.\s+(?=[A-ZÀ-Ý«(])|$/g;
+// il punto di un'iniziale ("M. Catenacci") non chiude la citazione
+const RE_FINE_TRATTO = /;|(?<!(?:^|[\s,(.])[A-Z])\.\s+(?=[A-ZÀ-Ý«(])|$/g;
 
 // Tratti da formattare in una nota: [{ idx, len, tipo, regola }].
 // nonTrovate (facoltativo): citazioni con "cit." che non corrispondono a nessuna opera della bibliografia
@@ -72,8 +76,12 @@ export function analizza(testo, elencoOpere, nonTrovate = null) {
     gruppi.get(k).push(o);
   }
 
-  for (const [chiave, gruppo] of gruppi) {
-    const a = normalizza(chiave);
+  for (const [chiave, gruppo] of gruppi)
+  for (const variante of varianti(chiave, minuscolo(B.senzaIniziali(gruppo[0].autore)))) {
+    // con le iniziali nella bibliografia, la nota può avere solo i cognomi (o il contrario);
+    // gli ultimi due autori possono essere uniti da "e" ("Cantone e Gatta") o dalla virgola
+    const ridotta = variante !== chiave && variante !== conE(chiave);
+    const a = normalizza(variante);
     let da = 0;
 
     while ((da = normMin.indexOf(a, da)) >= 0) {
@@ -83,6 +91,9 @@ export function analizza(testo, elencoOpere, nonTrovate = null) {
       // l'autore deve iniziare una parola
       if (inizio > 0 && isLetter(norm[inizio - 1])) continue;
       if (citazione[inizio]) continue;
+
+      // il cognome preceduto da un'iniziale l'ha già trovato la forma completa
+      if (ridotta && RE_INI_FINALE.test(norm.slice(0, inizio))) continue;
 
       // dopo il nome: ", " oppure " (a cura di), "
       const sep = RE_DOPO_AUTORE.exec(norm.slice(inizio + a.length));
@@ -98,7 +109,12 @@ export function analizza(testo, elencoOpere, nonTrovate = null) {
       }
       if (scelta === null) continue;
 
-      aggiungiAutori(res, inizio, chiave);
+      aggiungiAutori(res, inizio, variante);
+
+      // iniziale scritta nella nota ma non in bibliografia ("F. Antolisei"): in maiuscoletto anche lei
+      const ini = RE_INIZIALI_FINALI.exec(norm.slice(0, inizio));
+      if (!ridotta && ini)
+        res.push({ idx: ini.index, len: ini[0].trimEnd().length, tipo: MAIUSCOLETTO, regola: "autore" });
       res.push({ idx: dopo, len: lunghezza, tipo: CORSIVO, regola: "titolo" });
 
       // resto della stessa citazione: rivista o volume in corsivo, curatori in maiuscoletto
@@ -106,8 +122,13 @@ export function analizza(testo, elencoOpere, nonTrovate = null) {
       const fine = fineCitazione(norm, fineTitolo);
 
       let cerca = fineTitolo;
-      for (const c of scelta.curatori)
+      for (const c of scelta.curatori) {
+        const prima = res.length;
         cerca = aggiungi(res, norm, normalizza(c), cerca, fine, MAIUSCOLETTO, "curatore", c.length);
+        const sc = B.senzaIniziali(c);
+        if (res.length === prima && sc !== c)
+          cerca = aggiungi(res, norm, normalizza(sc), cerca, fine, MAIUSCOLETTO, "curatore", sc.length);
+      }
 
       cerca = fineTitolo;
       for (const c of scelta.corsivi)
@@ -141,7 +162,11 @@ export function analizza(testo, elencoOpere, nonTrovate = null) {
   // ---- rinvii
   for (const m of testo.matchAll(RE_CIT))
     if (!citazione[m.index])
-      res.push({ idx: m.index, len: m[0].length, tipo: TONDO, regola: m[0].startsWith("op") ? "op. cit. (tondo)" : "cit. (tondo)" });
+      res.push({
+        idx: m.index, len: m[0].length,
+        tipo: opzioni.citInCorsivo ? CORSIVO : TONDO,
+        regola: (m[0].startsWith("op") ? "op. cit." : "cit.") + (opzioni.citInCorsivo ? " (corsivo)" : " (tondo)")
+      });
 
   for (const m of testo.matchAll(RE_RINVIO))
     if (!citazione[m.index]) res.push({ idx: m.index, len: m[0].length, tipo: CORSIVO, regola: "ivi / ibidem" });
@@ -150,7 +175,7 @@ export function analizza(testo, elencoOpere, nonTrovate = null) {
     if (!citazione[m.index]) res.push({ idx: m.index, len: m[0].length, tipo: MAIUSCOLETTO, regola: "ID." });
 
   // ---- "Autore, Titolo, cit." senza corrispondenza in bibliografia
-  const autoriNoti = [...new Set(elencoOpere.flatMap(o => o.autore.split(", ")))]
+  const autoriNoti = [...new Set(elencoOpere.flatMap(o => o.autore.split(", ")).flatMap(x => [x, B.senzaIniziali(x)]))]
     .sort((x, y) => y.length - x.length);
 
   for (const m of testo.matchAll(RE_CIT)) {
@@ -243,9 +268,9 @@ function titoloCombacia(norm, pos, titolo) {
   return chiude ? lun : 0;
 }
 
-const RE_NOME = "(?:[A-Z]\\.\\s)?(?:D’|D'|De |Di |Della |Del )?[A-ZÀ-Ý][a-zà-ÿ’'\\-]+(?:\\s[A-ZÀ-Ý][a-zà-ÿ’'\\-]+)?";
+const RE_NOME = "(?:" + B.INIZIALI + "\\s)?(?:D’|D'|De |Di |Della |Del )?[A-ZÀ-Ý][a-zà-ÿ’'\\-]+(?:\\s[A-ZÀ-Ý][a-zà-ÿ’'\\-]+)?";
 const RE_VOLUME_CURATO = new RegExp(
-  ",\\s+in\\s+(" + RE_NOME + "(?:,\\s" + RE_NOME + ")*)\\s\\((?:a cura di|diretta da|coordinato da)\\),\\s", "yd");
+  ",\\s+in\\s+(" + RE_NOME + "(?:(?:,\\s|\\se\\s)" + RE_NOME + ")*)\\s\\((?:a cura di|diretta da|diretto da|coordinato da)\\),\\s", "yd");
 const RE_NOME_SINGOLO = new RegExp(RE_NOME, "g");
 
 function volumeCurato(res, norm, da, fine) {
@@ -281,11 +306,28 @@ function volumeCurato(res, norm, da, fine) {
 // in mezzo non contano, altrimenti il maiuscoletto risulterebbe sempre "misto"
 function aggiungiAutori(res, inizio, autori) {
   let pos = 0;
-  for (const a of autori.split(", ")) {
-    if (a.length > 0) res.push({ idx: inizio + pos, len: a.length, tipo: MAIUSCOLETTO, regola: "autore" });
-    pos += a.length + 2;
+  while (pos < autori.length) {
+    const v = autori.indexOf(", ", pos), e = autori.indexOf(" e ", pos);
+    const fine = v < 0 ? (e < 0 ? autori.length : e) : (e < 0 ? v : Math.min(v, e));
+    if (fine > pos) res.push({ idx: inizio + pos, len: fine - pos, tipo: MAIUSCOLETTO, regola: "autore" });
+    pos = fine + (fine === v ? 2 : 3);
   }
 }
+
+// Forme in cui gli autori possono comparire nella nota: con o senza iniziali,
+// gli ultimi due separati dalla virgola o da "e"
+function varianti(completa, ridotta) {
+  return [...new Set([completa, conE(completa), ridotta, conE(ridotta)])];
+}
+
+// "a, b, c" → "a, b e c"
+function conE(autori) {
+  const u = autori.lastIndexOf(", ");
+  return u > 0 ? autori.slice(0, u) + " e " + autori.slice(u + 2) : autori;
+}
+
+const RE_INI_FINALE = new RegExp(B.INI + "\\s?$");
+const RE_INIZIALI_FINALI = new RegExp("(?<![\\p{L}\\p{N}_’'.])" + B.INIZIALI + "\\s?$", "u");
 
 function aggiungi(res, norm, cosa, da, fine, tipo, regola, len) {
   if (cosa.length === 0) return da;
@@ -304,7 +346,7 @@ function fineCitazione(t, da) {
 
 function inizioCitazione(t, prima) {
   let i = Math.max(t.lastIndexOf(";", Math.max(prima - 1, 0)), 0);
-  const m = /^.*(?:\.\s+(?=[A-ZÀ-Ý]))/s.exec(t.slice(i, prima));
+  const m = /^.*(?:(?<!(?:^|[\s,(.])[A-Z])\.\s+(?=[A-ZÀ-Ý]))/s.exec(t.slice(i, prima));
   if (m) i += m[0].length;
   if (i < t.length && t[i] === ";") i++;
   return i;

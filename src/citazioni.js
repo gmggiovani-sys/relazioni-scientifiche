@@ -1,9 +1,11 @@
 /* global Word */
 // Citazioni nelle note secondo le istruzioni della cattedra (solo formattazione, il testo non cambia):
-// autore e curatore in MAIUSCOLETTO; titolo, rivista e volume in corsivo; cit. e op. cit. in tondo;
+// autore e curatore in MAIUSCOLETTO; titolo, rivista e volume in corsivo; cit. e op. cit. in corsivo (o in tondo, a scelta);
 // ivi, ibidem in corsivo; ID. in maiuscoletto. Le opere si riconoscono confrontando le note con la bibliografia.
 
 import * as C from "./parser/citazioni.js";
+import * as I from "./parser/iniziali.js";
+import { elencoIniziali } from "./bibliografia.js";
 import {
   vociConStile, note, preparaTratto, aBlocchi, maiuscolettoDisponibile,
   assicuraStileMaiuscoletto, applicaMaiuscoletto, maiuscolettoDaHtml, esegui
@@ -143,6 +145,72 @@ export async function formatta(stileBiblio, soloSelezione, chiavi, avanzamento) 
       esito += "\n\nIl maiuscoletto è applicato con lo stile carattere \"Maiuscoletto\" (questa versione di Word non lo permette direttamente agli add-in).";
     if (chiavi === null && r.daControllare.length)
       esito += "\n\nCitazioni da controllare a mano: " + r.daControllare.length + " (elenco con \"Controlla\").";
+    return esito;
+  });
+}
+
+// ===============================
+// AUTORI NELLE NOTE: iniziale del nome ("F. Antolisei") e "e" tra gli ultimi due autori o curatori
+// ===============================
+
+// Proposte: [{ chiave, iNota, dove, testo (della nota), p (proposta) }]
+export async function autoriNote(stileBiblio, soloSelezione) {
+  return esegui(soloSelezione, true, async (context, sel) => {
+    const { testi } = await vociConStile(context, stileBiblio);
+    if (testi.length === 0)
+      throw new Error("Per riconoscere le opere citate serve la bibliografia con stile \"" + stileBiblio + "\".");
+
+    const opere = C.opere(testi);
+    const daBiblio = I.dallaBibliografia(testi);
+    const regole = I.carica(elencoIniziali());
+    const elencoNote = await note(context, sel);
+
+    const righe = [];
+    elencoNote.forEach((n, iNota) => {
+      for (const p of I.nelleNote(n.testo, opere, daBiblio, regole))
+        righe.push({ chiave: iNota + "|" + p.idx + "|" + (p.sostituto ? "e" : "i"), iNota, dove: n.dove, testo: n.testo, p });
+    });
+    return righe;
+  });
+}
+
+// Applica le proposte scelte (righe di autoriNote)
+export async function applicaAutori(soloSelezione, scelte) {
+  return esegui(soloSelezione, false, async (context, sel) => {
+    const elencoNote = await note(context, sel);
+    const maiusc = maiuscolettoDisponibile();
+    if (!maiusc && scelte.some(x => !x.p.sostituto)) await assicuraStileMaiuscoletto(context);
+
+    let iniziali = 0, congiunzioni = 0, saltate = 0;
+    const valide = scelte.filter(x => {
+      const ok = elencoNote[x.iNota] && elencoNote[x.iNota].testo === x.testo;
+      if (!ok) saltate++;
+      return ok;
+    });
+
+    const lavori = valide.map(x => ({ x, cerca: preparaTratto(elencoNote[x.iNota].corpo, x.testo, x.p.idx, x.p.nome.length) }));
+    await context.sync();
+
+    // nota per nota, dall'ultimo nome al primo
+    lavori.sort((a, b) => a.x.iNota - b.x.iNota || b.x.p.idx - a.x.p.idx);
+    for (const { x, cerca } of lavori) {
+      const r = cerca.risolvi();
+      if (!r) { saltate++; continue; }
+      if (x.p.sostituto) {
+        r.insertText(x.p.sostituto, "Replace");          // ", " → " e "
+        congiunzioni++;
+      } else {
+        const ins = r.insertText(x.p.iniziale + " ", "Start");
+        applicaMaiuscoletto(ins, maiusc);                 // iniziale e cognome in maiuscoletto
+        applicaMaiuscoletto(r, maiusc);
+        iniziali++;
+      }
+    }
+    await context.sync();
+
+    let esito = "Iniziali aggiunte nelle note: " + iniziali + ", con iniziale e cognome in maiuscoletto." +
+                "\n\"e\" tra gli ultimi due autori o curatori: " + congiunzioni + ".";
+    if (saltate) esito += "\n\nNon applicate perché la nota è cambiata dopo il controllo: " + saltate + ". Ripeti il controllo.";
     return esito;
   });
 }

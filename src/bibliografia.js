@@ -5,6 +5,7 @@
 
 import * as B from "./parser/bibliografia.js";
 import * as NB from "./parser/note-bibliografia.js";
+import * as I from "./parser/iniziali.js";
 import {
   note, preparaTratto, aBlocchi, maiuscolettoDisponibile, assicuraStileMaiuscoletto, applicaMaiuscoletto
 } from "./word.js";
@@ -138,6 +139,88 @@ export async function vaiAVoce(stile, indice) {
     paragrafi[indice].select();
     await context.sync();
     return true;
+  });
+}
+
+// ===============================
+// NOMI DEGLI AUTORI: iniziale del nome ("F. Antolisei") e "e" tra gli ultimi due autori
+// ===============================
+
+// Elenco delle iniziali ("Cognome = F."): si tiene nella memoria del pannello, modificabile dall'utente
+const CHIAVE_ELENCO = "rs.inizialiElenco";
+
+export function elencoIniziali() {
+  try {
+    const v = localStorage.getItem(CHIAVE_ELENCO);
+    if (v) return v;
+  } catch (e) { /* senza memoria locale: l'elenco predefinito */ }
+  return I.INTESTAZIONE_ELENCO + I.PREDEFINITE;
+}
+
+export function salvaElencoIniziali(testo) {
+  try {
+    if (testo && testo.trim()) localStorage.setItem(CHIAVE_ELENCO, testo);
+    else localStorage.removeItem(CHIAVE_ELENCO);
+    return true;
+  } catch (e) { return false; }
+}
+
+export const elencoPredefinito = () => I.INTESTAZIONE_ELENCO + I.PREDEFINITE;
+
+// Proposte per tutte le voci: [{ i, t (testo letto), p (proposta) }]
+export async function nomiAutori(stile) {
+  return Word.run(async context => {
+    const { testi } = await voci(context, stile);
+
+    // iniziali usate nelle note per gli stessi cognomi ("P. Frosina")
+    let testiNote = [];
+    try { testiNote = (await note(context, null)).map(n => n.testo); } catch (e) { /* note non leggibili */ }
+    const dalleNote = I.dalleNote(testiNote, testi.flatMap(B.maiuscoletto));
+
+    const regole = I.carica(elencoIniziali());
+    const righe = [];
+    testi.forEach((t, i) => { for (const p of I.proposte(t, regole, dalleNote)) righe.push({ i, t, p }); });
+    return righe;
+  });
+}
+
+// Applica le proposte scelte, poi rimette corsivi e maiuscoletto alle voci cambiate
+export async function applicaNomi(stile, scelte) {
+  return Word.run(async context => {
+    const { paragrafi, testi } = await voci(context, stile);
+    let iniziali = 0, congiunzioni = 0, saltate = 0;
+    const cambiate = new Set();
+
+    // la voce deve essere ancora quella letta dal controllo
+    const valide = scelte.filter(x => {
+      const ok = testi[x.i] === x.t;
+      if (!ok) saltate++;
+      return ok;
+    });
+
+    const lavori = valide.map(x => ({ x, cerca: preparaTratto(paragrafi[x.i], x.t, x.p.idx, x.p.nome.length) }));
+    await context.sync();
+
+    // dentro ogni voce dall'ultimo nome al primo
+    lavori.sort((a, b) => a.x.i - b.x.i || b.x.p.idx - a.x.p.idx);
+    for (const { x, cerca } of lavori) {
+      const r = cerca.risolvi();
+      if (!r) { saltate++; continue; }
+      if (x.p.sostituto) { r.insertText(x.p.sostituto, "Replace"); congiunzioni++; }
+      else { r.insertText(x.p.iniziale + " ", "Start"); iniziali++; }
+      cambiate.add(x.i);
+    }
+    await context.sync();
+
+    // il maiuscoletto comprende anche le iniziali
+    const indici = [...cambiate];
+    const dopo = await voci(context, stile);
+    const c = await corsivi(context, stile, null, indici.map(i => dopo.paragrafi[i]), indici.map(i => dopo.testi[i]));
+
+    let esito = "Iniziali aggiunte: " + iniziali + "\n\"e\" tra gli ultimi due autori o curatori: " + congiunzioni +
+                "\nVoci cambiate: " + indici.length + " (con corsivi e maiuscoletto riapplicati: " + c.maiuscoletto + " nomi).";
+    if (saltate) esito += "\n\nNon applicate perché la voce è cambiata dopo il controllo: " + saltate + ". Ripeti il controllo.";
+    return esito;
   });
 }
 

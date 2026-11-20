@@ -303,8 +303,9 @@ export function normalizzazioni(raw) {
 
 // ---------- ordinamento ----------
 
-// Chiave: blocco (nell'ordine in cui compare nel documento), poi data della decisione, poi numero
-export function chiaveOrdinamento(v, ordineGruppi) {
+// Chiave: blocco (nell'ordine in cui compare nel documento), poi data della decisione, poi numero;
+// soloData: data della decisione e numero, senza blocchi (a parità di data conta il blocco)
+export function chiaveOrdinamento(v, ordineGruppi, soloData = false) {
   let g = ordineGruppi.indexOf(v.gruppo);
   if (g < 0) g = 999;
 
@@ -315,7 +316,9 @@ export function chiaveOrdinamento(v, ordineGruppi) {
   const mn = /^[0-9]+/.exec(v.numero);
   const num = mn ? mn[0].padStart(10, "0") : "9999999999";
 
-  return String(g).padStart(3, "0") + "#" + data + "#" + num;
+  return soloData
+    ? data + "#" + String(g).padStart(3, "0") + "#" + num
+    : String(g).padStart(3, "0") + "#" + data + "#" + num;
 }
 
 // Voce da controllare per la pagina: rivista cartacea senza "p." o "c."

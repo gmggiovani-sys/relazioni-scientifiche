@@ -17,9 +17,22 @@ export const CITTA = [
 
 const MESI = "gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre";
 
-// Segmento con forma di cognome (anche "D’Amico", "De Vero", "F. Galgano", "Rossi (a cura di)", "Aa. Vv.")
+// Abbreviazioni con la maiuscola che non sono iniziali di un nome ("Cfr.", "Riv.", "Cass.", "Roma.")
+const NON_INIZIALI =
+  "Cf|Cfr|Cost|Pret|Trib|Cass|Enc|Giur|Riv|Dir|App|Cons|Sez|Art|Artt|Vol|Cap|Ed|Edd|Op|Id|Ibid|Dig|Proc|Pen|Civ|" +
+  "Comm|Rass|Quad|Amm|Lav|Trim|Pubb|Priv|Int|Eur|Cit|Sist|Arch|Leg|Doc|Ad|Plen|Gen|Reg|Cod|Disp|Att|Prel|Tit|Lib|" +
+  "Par|Sec|Ord|Sent|Dec|Circ|Spec|Supp|All|Abr|Pag|Pagg|Not|Vd|Ved|Es|Pt|Tab|Sub|Prof|Dott|Avv|Sig|Sigg|Ann|Agg|" +
+  "Corr|Pres|Min|Giud|Soc|Imp|Impr|Fall|Prev|Resp|Nuov|Foro|Roma|Bari|Pisa|Lodi|Asti|Como|Enna|Mod|Gazz|Atti|Parl|" +
+  "Rel|Prot|Uff|Ist|Univ|Dep|Coll|Lett|Nn|Pp|Ss|Ecc|Etc|Vs|Cd|Ivi|Cons|Ord|Delib|Fasc|Nota|Ult|Sup|Inf|Pol|Crit|Ind|Ec|Fin|Ass|Prat|Rev|Aa|Vv|Cfn|Sp|Bd|Abs";
+
+// Iniziale del nome: una lettera ("F.") o, per distinguere gli omonimi, poche lettere ("As.", "Salv.")
+export const INI = "(?:[A-Z]\\.|(?!(?:" + NON_INIZIALI + ")\\.)[A-Z][a-z]{1,3}\\.)";
+// una o più iniziali: "F.", "G.L.", "A. M.", "Salv."
+export const INIZIALI = INI + "(?:\\s?" + INI + ")*";
+
+// Segmento con forma di cognome (anche "D’Amico", "De Vero", "F. Galgano", "G.L. Gatta", "Rossi (a cura di)", "Aa. Vv.")
 export const RE_AUTORE = new RegExp(
-  "^(?:[A-Z]\\.\\s)?(?:(?:D’|D'|De |Di |Della |Del |La |Lo )(?=[A-Za-zÀ-ÿ]))?" +
+  "^(?:" + INIZIALI + "\\s)?(?:(?:D’|D'|De |Di |Della |Del |La |Lo )(?=[A-Za-zÀ-ÿ]))?" +
   "[A-Za-zÀ-ÿ][a-zà-ÿ’'\\-]+(?:[\\s\\-][A-ZÀ-Ý][a-zà-ÿ’'\\-]+)?(?:\\s\\(a cura di\\))?$" +
   "|^Aa\\. ?Vv\\.$");
 
@@ -41,7 +54,7 @@ const RE_WEB_INIZIO = /^(.*?),\s+disponibile su\s/s;
 // "fasc. II, 2024" in fondo alle voci di rivista
 const RE_FASCICOLO_ANNO = /, ((?:fasc\. |vol\. )?[IVX]+), ((?:19|20)[0-9]{2})\.?$/;
 
-const RE_INIZIALE = /^[A-Z]\.\s+/;
+const RE_INIZIALE = new RegExp("^" + INIZIALI + "\\s*");   // "B. ", "G.L. ", "A. M. ", "Salv. "
 const RE_CARATTERI_CHIAVE = /[’'\s\-.]/g;
 
 export function escapeRe(s) {
@@ -77,12 +90,54 @@ function testa(parts) {
 // (es. "Gambardella, Peculato, abuso d'ufficio…": "Peculato" fa parte del titolo)
 export function stripAutori(segs) {
   const a = [];
-  while (segs.length > 1 && RE_AUTORE.test(segs[0]) && !RE_VOCE_SUB.test(segs[0])) {
+  while (segs.length > 1 && !RE_VOCE_SUB.test(segs[0])) {
+    // ultimi due autori uniti da "e" (istruzioni della cattedra): "D. Castellano e G. Cordini"
+    const coppia = coppiaConE(segs[0]);
+    if (coppia !== null) {
+      if (RE_INIZIO_FONTE.test(segs[1]) || RE_MINUSCOLA.test(segs[1])) break;
+      a.push(...coppia);
+      segs.shift();
+      break;    // dopo "… e Ultimo" non ci sono altri autori
+    }
+
+    if (!RE_AUTORE.test(segs[0])) break;
     if (a.length > 0 && (RE_INIZIO_FONTE.test(segs[1]) || RE_MINUSCOLA.test(segs[1]))) break;
     a.push(segs.shift());
     if (RE_IN.test(segs[0])) break;
   }
   return a;
+}
+
+// "Castellano e G. Cordini" → ["Castellano", "G. Cordini"]; null se non sono due nomi
+function coppiaConE(s) {
+  const i = s.indexOf(" e ");
+  if (i <= 0 || s.indexOf(" e ", i + 3) >= 0) return null;
+
+  const x = s.slice(0, i), y = s.slice(i + 3);
+  for (const n of [x, y.replace(RE_SUFFISSO_CURATELA, "")]) {
+    const c = n.replace(RE_INIZIALE, "");
+    if (c.length === 0 || !/^\p{Lu}/u.test(c) || !RE_AUTORE.test(n) || PAROLE_DI_TITOLO.has(c)) return null;
+  }
+  return [x, y];
+}
+
+// Parole che, con la maiuscola e unite da "e", sono più spesso un titolo che due autori ("Stato e Chiesa")
+const PAROLE_DI_TITOLO = new Set([
+  "Stato", "Diritto", "Diritti", "Chiesa", "Costituzione", "Politica", "Società", "Giustizia", "Legge", "Economia",
+  "Mercato", "Sport", "Persona", "Famiglia", "Lavoro", "Impresa", "Europa", "Italia", "Storia", "Teoria", "Pena",
+  "Processo", "Libertà", "Potere", "Democrazia", "Etica", "Morale", "Natura", "Ragione", "Scienza", "Tecnica",
+  "Religione", "Cultura", "Istituzioni", "Doveri", "Principi", "Regole", "Norme", "Valori", "Cittadini", "Giudici",
+  "Giudice", "Amministrazione", "Responsabilità", "Salute", "Sicurezza", "Ambiente", "Tecnologia", "Mafia", "Ordine"
+]);
+
+// Nomi di un elenco di autori: "A, B e C" → A, B, C
+export function nomiAutori(autori) {
+  const res = [];
+  for (const p of (autori || "").split(", ")) {
+    const c = coppiaConE(p);
+    if (c !== null) res.push(...c); else if (p.length > 0) res.push(p);
+  }
+  return res;
 }
 
 // ---------- estrazione dei campi ----------
@@ -243,11 +298,40 @@ export function maiuscoletto(raw) {
     if (cu >= 0 && cu <= 3)
       for (let i = 0; i <= cu; i++) {
         const n = parts[i].replace(RE_SUFFISSO_CURATELA, "").trim();
-        if (n.length > 0 && RE_AUTORE.test(n)) nomi.push(n);
+        for (const c of nomiAutori(n))
+          if (c.length > 0 && RE_AUTORE.test(c)) nomi.push(c);
       }
   }
 
   return nomi;
+}
+
+// ---------- "e" tra gli ultimi due autori ----------
+
+const NOME_RE = "(?:" + INIZIALI + "\\s)?(?:D’|D'|De |Di |Della |Del )?[A-ZÀ-Ý][a-zà-ÿ’'\\-]+(?:\\s[A-ZÀ-Ý][a-zà-ÿ’'\\-]+)?";
+const RE_CURATORI_IN = new RegExp(
+  "\\bin\\s(?:" + NOME_RE + ",\\s)*(" + NOME_RE + "),\\s(" + NOME_RE + ")\\s\\((?:a cura di|diretta da|coordinato da)\\)", "d");
+
+// Virgole da sostituire con "e" tra gli ultimi due autori ("D. Castellano, G. Cordini" → "D. Castellano e G. Cordini")
+// e tra gli ultimi due curatori dopo "in" ("in E. Mezzetti, D. Piva (a cura di)"):
+// [posizione della virgola, penultimo nome, ultimo nome]
+export function virgoleTraAutori(t) {
+  const res = [];
+  const seg = dividi(pulisci(t));
+  const autori = stripAutori(seg);
+
+  if (autori.length >= 2) {
+    const elenco = autori.join(", ");
+    if (t.startsWith(elenco)) {
+      const x = autori[autori.length - 2], y = autori[autori.length - 1];
+      res.push([elenco.length - y.length - 2, x, y.replace(RE_SUFFISSO_CURATELA, "").trim()]);
+    }
+  }
+
+  const cur = RE_CURATORI_IN.exec(t);
+  if (cur) res.push([cur.indices[1][1], cur[1], cur[2]]);
+
+  return res;
 }
 
 // ---------- ordine dei campi ----------
@@ -305,7 +389,12 @@ function normalizzaChiave(s) {
   return r.replace(RE_CARATTERI_CHIAVE, "");
 }
 
-// Cognome per l'ordinamento: senza iniziale ("B. Romano") né nome per esteso ("Paolo Frosina")
+// "F. Cantone, G.L. Gatta" → "Cantone, Gatta"
+export function senzaIniziali(autori) {
+  return (autori || "").split(", ").map(a => a.replace(RE_INIZIALE, "")).join(", ");
+}
+
+// Cognome per l'ordinamento: senza iniziali ("B. Romano", "G.L. Gatta") né nome per esteso ("Paolo Frosina")
 export function soloCognome(autore) {
   const a = (autore || "").replace(RE_INIZIALE, "");
   const c = conIniziale(a);

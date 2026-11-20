@@ -7,6 +7,8 @@ import * as Elenco from "./elenco.js";
 import * as Bibliografia from "./bibliografia.js";
 import * as Giurisprudenza from "./giurisprudenza.js";
 import * as Abbreviazioni from "./abbreviazioni.js";
+import * as Impaginazione from "./impaginazione.js";
+import { opzioni as opzioniCitazioni } from "./parser/citazioni.js";
 import * as Foto from "./foto.js";
 import * as Numeri from "./numeri.js";
 import { preparaFoto, riduci } from "./immagini.js";
@@ -33,6 +35,17 @@ function ricorda(id) {
   });
 }
 
+function ricordaSpunta(id) {
+  const el = $(id);
+  try {
+    const v = localStorage.getItem("rs." + id);
+    if (v !== null) el.checked = v === "1";
+  } catch (e) { /* valore predefinito */ }
+  el.addEventListener("change", () => {
+    try { localStorage.setItem("rs." + id, el.checked ? "1" : "0"); } catch (e) { /* niente */ }
+  });
+}
+
 // Esegue un comando con i pulsanti disattivati e l'errore in chiaro
 async function esegui(pulsanti, azione) {
   pulsanti.forEach(b => (b.disabled = true));
@@ -52,7 +65,7 @@ async function esegui(pulsanti, azione) {
 let ultimi = null;     // ultima analisi
 
 function stiliSommari() {
-  return [$("stileTitolo").value, $("stileSommario").value];
+  return [$("stileTitolo").value, $("stileSommario").value, Number($("profondita").value)];
 }
 
 function disegnaSommari() {
@@ -153,6 +166,7 @@ async function scriviSommari() {
 function preparaSommari() {
   ricorda("stileTitolo");
   ricorda("stileSommario");
+  ricorda("profondita");
   const pulsanti = [$("analizza"), $("scrivi")];
   $("analizza").addEventListener("click", () => esegui(pulsanti, analizzaSommari));
   $("scrivi").addEventListener("click", () => esegui(pulsanti, scriviSommari));
@@ -169,9 +183,17 @@ function preparaSommari() {
 // ----- Citazioni nelle note -----
 
 let righeCit = [];
+let modoCit = "parti";        // "parti" (formattazione) o "autori" (iniziali e "e")
 
 function opzioniCit() {
+  opzioniCitazioni.citInCorsivo = $("citCorsivo").checked;
   return [$("stileBiblio").value.trim() || "Biblio", $("ambitoCit").value === "selezione"];
+}
+
+function mostraModoCit(modo) {
+  modoCit = modo;
+  $("formattaScelteCit").hidden = modo !== "parti";
+  $("applicaAutoriCit").hidden = modo !== "autori";
 }
 
 const avanzamento = cosa => (fatti, totale) => messaggio(cosa + ": " + fatti + " di " + totale + "…");
@@ -186,6 +208,7 @@ async function controllaCitazioni() {
       if (!(await Citazioni.vaiA(chiave, testo, sel))) messaggio("Non trovato: il documento è cambiato, controlla di nuovo.");
     });
 
+  mostraModoCit("parti");
   righeCit = [
     ...r.daControllare.map(d => ({
       chiave: d.chiave, titolo: d.dove + " · da controllare a mano", testo: d.testo,
@@ -221,10 +244,65 @@ async function formattaCitazioni(soloScelte) {
   messaggio(esito);
 }
 
+// Iniziale del nome e "e" tra gli ultimi due autori nelle citazioni delle note
+let righeAutori = [];
+
+async function autoriCitazioni() {
+  const [stile, sel] = opzioniCit();
+  messaggio("Lettura delle note…");
+  righeAutori = await Citazioni.autoriNote(stile, sel);
+  const fonte = p => (p.fonte === "bibliografia" ? "dalla bibliografia" : p.fonte === "sconosciuta" ? "sconosciuta: aggiungila all'elenco delle iniziali" : p.fonte);
+  const vai = x => () => esegui([], async () => {
+    if (!(await Citazioni.vaiA(x.iNota + "|" + x.p.idx + "|" + x.p.nome.length + "|x", x.testo.substr(x.p.idx, x.p.nome.length), sel)))
+      messaggio("Non trovato: il documento è cambiato, controlla di nuovo.");
+  });
+
+  mostraModoCit("autori");
+  righeCit = righeAutori.map(x => {
+    const p = x.p, sicura = p.iniziale !== null && !p.dubbia;
+    const prima = p.sostituto ? p.autori : p.nome;
+    const dopo = p.sostituto ? p.autori.slice(0, p.idx - p.inizioAutori) + p.sostituto + p.autori.slice(p.idx - p.inizioAutori + 2)
+                             : p.iniziale !== null ? p.iniziale + " " + p.nome : "—";
+    return {
+      chiave: x.chiave, titolo: prima + "  →  " + dopo, classe: sicura ? "" : "dubbio",
+      dettaglio: x.dove + " · " + fonte(p), testo: contesto(x.testo, p.idx, Math.max(p.nome.length, 2)),
+      spuntabile: p.iniziale !== null, spuntato: sicura, vai: vai(x)
+    };
+  });
+
+  $("risultatiCit").hidden = righeCit.length === 0;
+  Elenco.disegna($("elencoCit"), righeCit);
+  const conE = righeAutori.filter(x => x.p.sostituto).length;
+  messaggio(righeCit.length === 0
+    ? "Tutti gli autori e i curatori riconosciuti hanno già l'iniziale del nome e, se sono più di uno, gli ultimi due sono uniti da \"e\"."
+    : (righeCit.length - conE) + " autori o curatori senza iniziale, " + conE + " senza \"e\" tra gli ultimi due. " +
+      "Spuntate le correzioni sicure; in giallo quelle da verificare o da fare a mano.");
+}
+
+function contesto(t, i, n) {
+  const a = Math.max(0, i - 30), b = Math.min(t.length, i + n + 50);
+  return (a > 0 ? "…" : "") + t.slice(a, b) + (b < t.length ? "…" : "");
+}
+
+async function applicaAutoriCitazioni() {
+  const [, sel] = opzioniCit();
+  const chiavi = new Set(Elenco.scelte(righeCit));
+  const scelte = righeAutori.filter(x => chiavi.has(x.chiave));
+  if (!scelte.length) { messaggio("Nessuna voce spuntata."); return; }
+  messaggio("Correzione in corso…");
+  const esito = await Citazioni.applicaAutori(sel, scelte);
+  righeCit = [];
+  $("risultatiCit").hidden = true;
+  messaggio(esito);
+}
+
 function preparaCitazioni() {
   ricorda("stileBiblio");
   ricorda("ambitoCit");
-  const pulsanti = [$("controllaCit"), $("formattaCit"), $("formattaScelteCit")];
+  ricordaSpunta("citCorsivo");
+  const pulsanti = [$("controllaCit"), $("formattaCit"), $("formattaScelteCit"), $("autoriCit"), $("applicaAutoriCit")];
+  $("autoriCit").addEventListener("click", () => esegui(pulsanti, autoriCitazioni));
+  $("applicaAutoriCit").addEventListener("click", () => esegui(pulsanti, applicaAutoriCitazioni));
   $("controllaCit").addEventListener("click", () => esegui(pulsanti, controllaCitazioni));
   $("formattaCit").addEventListener("click", () => esegui(pulsanti, () => formattaCitazioni(false)));
   $("formattaScelteCit").addEventListener("click", () => esegui(pulsanti, () => formattaCitazioni(true)));
@@ -245,15 +323,16 @@ function mostraRisultatiBib(modo, titolo) {
   modoBib = modo;
   $("risultatiBib").hidden = false;
   $("titoloBib").textContent = titolo;
-  const note = modo === "note";
-  $("tutteBib").hidden = !note;
-  $("nessunaBib").hidden = !note;
+  const note = modo === "note", nomi = modo === "nomi", spunte = note || nomi;
+  $("tutteBib").hidden = !spunte;
+  $("nessunaBib").hidden = !spunte;
   $("aggiungiBib").hidden = !note;
-  $("filtroBibLabel").hidden = note;
-  $("copiaBib").hidden = note;
+  $("applicaNomiBib").hidden = !nomi;
+  $("filtroBibLabel").hidden = spunte;
+  $("copiaBib").hidden = spunte;
   Elenco.disegna($("elencoBib"), righeBib, {
-    soloEvidenziate: !note && $("soloDubbieBib").checked,
-    vuoto: note ? "Nessuna voce da aggiungere." : "Tutte le voci hanno autore e titolo."
+    soloEvidenziate: !spunte && $("soloDubbieBib").checked,
+    vuoto: note ? "Nessuna voce da aggiungere." : nomi ? "Nessuna correzione da decidere." : "Tutte le voci hanno autore e titolo."
   });
 }
 
@@ -335,9 +414,66 @@ async function aggiungiBib() {
   messaggio(esito);
 }
 
+// Nomi degli autori: iniziale del nome e "e" tra gli ultimi due autori o curatori
+let nomiBib = [];
+
+async function nomiAutoriBib() {
+  nascondiRisultatiBib();
+  messaggio("Lettura della bibliografia e delle note…");
+  nomiBib = await Bibliografia.nomiAutori(stileVoci());
+  const vai = i => () => esegui([], async () => { await Bibliografia.vaiAVoce(stileVoci(), i); });
+  const fonte = p => (p.sostituto ? p.fonte : p.fonte === "note" ? "dalle note (da verificare)"
+                    : p.fonte === "sconosciuta" ? "sconosciuta: aggiungila all'elenco delle iniziali" : p.fonte);
+
+  righeBib = nomiBib.map((x, k) => {
+    const p = x.p, sicura = p.iniziale !== null && !p.dubbia;
+    return {
+      chiave: String(k), classe: sicura ? "" : "dubbio",
+      titolo: p.sostituto ? p.autori + "  →  " + p.autori.replace(", ", p.sostituto)
+                          : p.nome + "  →  " + (p.iniziale !== null ? p.iniziale + " " + p.nome : "—"),
+      dettaglio: fonte(p), testo: x.t,
+      spuntabile: p.iniziale !== null, spuntato: sicura, vai: vai(x.i)
+    };
+  });
+
+  if (!righeBib.length) {
+    messaggio("Tutti gli autori e i curatori hanno già l'iniziale del nome e, se sono più di uno, gli ultimi due sono uniti da \"e\".");
+    return;
+  }
+  const conE = nomiBib.filter(x => x.p.sostituto).length;
+  mostraRisultatiBib("nomi", (righeBib.length - conE) + " senza iniziale, " + conE + " senza \"e\"");
+  messaggio("Spuntate le correzioni sicure. In giallo quelle da verificare (spuntale se sono giuste) e le iniziali sconosciute: " +
+            "aggiungile in \"Elenco delle iniziali\" e ripeti il comando.");
+}
+
+async function applicaNomiBib() {
+  const chiavi = new Set(Elenco.scelte(righeBib));
+  const scelte = nomiBib.filter((x, k) => chiavi.has(String(k)));
+  if (!scelte.length) { messaggio("Nessuna voce spuntata."); return; }
+  messaggio("Correzione in corso…");
+  const esito = await Bibliografia.applicaNomi(stileVoci(), scelte);
+  nascondiRisultatiBib();
+  messaggio(esito);
+}
+
+function preparaElencoIniziali() {
+  $("elencoIniziali").value = Bibliografia.elencoIniziali();
+  $("salvaIniziali").addEventListener("click", () =>
+    messaggio(Bibliografia.salvaElencoIniziali($("elencoIniziali").value)
+      ? "Elenco delle iniziali salvato: vale dalla prossima esecuzione di \"Nomi degli autori\" o \"Autori nelle note\"."
+      : "Non riesco a salvare l'elenco (memoria del pannello non disponibile).", false));
+  $("ripristinaIniziali").addEventListener("click", () => {
+    $("elencoIniziali").value = Bibliografia.elencoPredefinito();
+    messaggio("Elenco predefinito ripristinato nella casella: clicca \"Salva l'elenco\" per usarlo.");
+  });
+}
+
 function preparaBibliografia() {
   ricorda("stileVoci");
-  const pulsanti = ["sistemaBib", "campiBib", "ordinaBib", "corsiviBib", "estraiBib", "daNoteBib", "aggiungiBib"].map($);
+  preparaElencoIniziali();
+  const pulsanti = ["sistemaBib", "campiBib", "ordinaBib", "corsiviBib", "nomiBib", "estraiBib", "daNoteBib", "aggiungiBib", "applicaNomiBib"].map($);
+  $("nomiBib").addEventListener("click", () => esegui(pulsanti, nomiAutoriBib));
+  $("applicaNomiBib").addEventListener("click", () => esegui(pulsanti, applicaNomiBib));
   const su = (id, f) => $(id).addEventListener("click", () => esegui(pulsanti, f));
   su("sistemaBib", () => eseguiBib(() => Bibliografia.sistema(stileVoci(), progresso)));
   su("campiBib", () => eseguiBib(() => Bibliografia.soloOrdineCampi(stileVoci(), progresso)));
@@ -357,6 +493,7 @@ function preparaBibliografia() {
 let righeGiur = [];
 let campiGiur = [];
 const stileGiur = () => $("stileGiur").value.trim() || "Giurisprudenza";
+const giurPerData = () => $("ordineGiur").value !== "organo";
 
 function disegnaGiur() {
   Elenco.disegna($("elencoGiur"), righeGiur, {
@@ -395,11 +532,12 @@ async function copiaCampiGiur() {
 
 function preparaGiurisprudenza() {
   ricorda("stileGiur");
+  ricorda("ordineGiur");
   const pulsanti = ["sistemaGiur", "normalizzaGiur", "ordinaGiur", "corsiviGiur", "controllaGiur", "estraiGiur"].map($);
   const su = (id, f) => $(id).addEventListener("click", () => esegui(pulsanti, f));
-  su("sistemaGiur", () => eseguiGiur(() => Giurisprudenza.sistema(stileGiur(), progresso)));
+  su("sistemaGiur", () => eseguiGiur(() => Giurisprudenza.sistema(stileGiur(), progresso, giurPerData())));
   su("normalizzaGiur", () => eseguiGiur(() => Giurisprudenza.soloNormalizza(stileGiur(), progresso)));
-  su("ordinaGiur", () => eseguiGiur(() => Giurisprudenza.soloOrdina(stileGiur())));
+  su("ordinaGiur", () => eseguiGiur(() => Giurisprudenza.soloOrdina(stileGiur(), giurPerData())));
   su("corsiviGiur", () => eseguiGiur(() => Giurisprudenza.soloCorsivi(stileGiur(), progresso)));
   su("controllaGiur", () => eseguiGiur(() => Giurisprudenza.controlla(stileGiur())));
   su("estraiGiur", estraiCampiGiur);
@@ -458,6 +596,45 @@ function preparaAbbreviazioni() {
   $("soloDubbieAbbr").addEventListener("change", disegnaAbbr);
   $("tutteAbbr").addEventListener("click", () => { Elenco.spunta(righeAbbr, true); disegnaAbbr(); });
   $("nessunaAbbr").addEventListener("click", () => { Elenco.spunta(righeAbbr, false); disegnaAbbr(); });
+}
+
+// ----- Impaginazione -----
+
+let righeImp = [];
+const stiliImp = () => [stileVoci(), stileGiur(), $("stileSommario").value.trim() || "Sommario Capitolo"];
+
+async function controllaImpaginazione() {
+  messaggio("Lettura del documento…");
+  const r = await Impaginazione.controlla(...stiliImp(), avanzamento("Lettura"));
+  righeImp = r.problemi.map(x => ({
+    chiave: x.chiave, classe: x.dubbio ? "dubbio" : "",
+    titolo: x.dove + " · " + x.cosa + ": " + x.attuale,
+    dettaglio: "Istruzioni: " + x.atteso + " · " + x.quanti + (x.dubbio ? " · decidi tu" : ""),
+    spuntabile: true, spuntato: !x.dubbio
+  }));
+  $("risultatiImp").hidden = righeImp.length === 0;
+  Elenco.disegna($("elencoImp"), righeImp);
+  const avvisi = r.avvisi.length ? "\n\n" + r.avvisi.join("\n\n") : "";
+  messaggio((righeImp.length === 0 ? "Impaginazione conforme alle istruzioni (" + r.riepilogo + ")."
+    : righeImp.length + " differenze dalle istruzioni (" + r.riepilogo + "). Spuntate le correzioni sicure; in giallo quelle da decidere.") + avvisi);
+}
+
+async function correggiImpaginazione() {
+  const chiavi = Elenco.scelte(righeImp);
+  if (!chiavi.length) { messaggio("Nessuna voce spuntata."); return; }
+  messaggio("Correzione in corso…");
+  const esito = await Impaginazione.correggi(...stiliImp(), chiavi, avanzamento("Lettura"));
+  righeImp = [];
+  $("risultatiImp").hidden = true;
+  messaggio(esito);
+}
+
+function preparaImpaginazione() {
+  const pulsanti = ["controllaImp", "correggiImp"].map($);
+  $("controllaImp").addEventListener("click", () => esegui(pulsanti, controllaImpaginazione));
+  $("correggiImp").addEventListener("click", () => esegui(pulsanti, correggiImpaginazione));
+  $("tutteImp").addEventListener("click", () => { Elenco.spunta(righeImp, true); Elenco.disegna($("elencoImp"), righeImp); });
+  $("nessunaImp").addEventListener("click", () => { Elenco.spunta(righeImp, false); Elenco.disegna($("elencoImp"), righeImp); });
 }
 
 // ----- Foto (Relazioni Tecniche) -----
@@ -539,6 +716,7 @@ Office.onReady(info => {
   preparaBibliografia();
   preparaGiurisprudenza();
   preparaAbbreviazioni();
+  preparaImpaginazione();
   preparaFotoPannello();
   preparaNumeri();
 

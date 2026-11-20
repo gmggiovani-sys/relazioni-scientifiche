@@ -113,3 +113,18 @@ h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: v
 #aggiungiFoto { width: 100%; }
 .scarica { display: block; margin-top: 8px; color: var(--accento); font-weight: 600; }
 .colonna button { text-align: left; }
+
+/* elenco delle iniziali */
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font: 12px/1.4 Consolas, "Courier New", monospace;
+  color: var(--testo);
+  background: var(--sfondo);
+  border: 1px solid var(--bordo);
+  border-radius: 4px;
+  padding: 6px;
+  margin: 6px 0;
+  resize: vertical;
+}
+code { font-size: 0.95em; }

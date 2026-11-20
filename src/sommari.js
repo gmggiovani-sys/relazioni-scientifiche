@@ -14,7 +14,8 @@ const maiuscolettoDisponibile = () =>
   Office.context.requirements.isSetSupported("WordApiDesktop", "1.3");
 
 // Capitoli del documento, con i paragrafi di Word da usare nello stesso Word.run
-async function capitoli(context, stileTitolo, stileSommario) {
+// profondita: livelli di titoli nel sommario (1 = solo Titolo 2; 0 = tutti)
+async function capitoli(context, stileTitolo, stileSommario, profondita = 1) {
   stileTitolo = (stileTitolo || "").trim();
   stileSommario = (stileSommario || "").trim() || STILE_SOMMARIO;
 
@@ -81,7 +82,8 @@ async function capitoli(context, stileTitolo, stileSommario) {
       }
 
       const lv = livello(p.outlineLevel, p.styleBuiltIn);
-      if (lv <= livelloTitolo || lv > 9 || p.tableNestingLevel > 0 || !pulisci(p.text)) continue;
+      const ultimo = profondita <= 0 ? 9 : Math.min(9, livelloTitolo + profondita);
+      if (lv <= livelloTitolo || lv > ultimo || p.tableNestingLevel > 0 || !pulisci(p.text)) continue;
       cap.paragrafi.push(p);
     }
   });
@@ -129,9 +131,9 @@ async function paragrafi(context, sezioni, proprieta) {
 }
 
 // Solo lettura: elenco per il pannello
-export async function analizza(stileTitolo, stileSommario) {
+export async function analizza(stileTitolo, stileSommario, profondita = 1) {
   return Word.run(async context => {
-    const r = await capitoli(context, stileTitolo, stileSommario);
+    const r = await capitoli(context, stileTitolo, stileSommario, profondita);
     return {
       stileTitolo: r.stileTitolo,
       stileSommario: r.stileSommario,
@@ -143,9 +145,9 @@ export async function analizza(stileTitolo, stileSommario) {
   });
 }
 
-export async function vaiA(chiave, stileTitolo, stileSommario) {
+export async function vaiA(chiave, stileTitolo, stileSommario, profondita = 1) {
   return Word.run(async context => {
-    const r = await capitoli(context, stileTitolo, stileSommario);
+    const r = await capitoli(context, stileTitolo, stileSommario, profondita);
     const cap = r.capitoli.find(c => c.chiave === chiave);
     if (!cap) return false;
     (cap.esistente || cap.ancora).select();
@@ -155,9 +157,9 @@ export async function vaiA(chiave, stileTitolo, stileSommario) {
 }
 
 // Crea o aggiorna i sommari dei capitoli scelti (chiavi). Restituisce l'esito da mostrare.
-export async function scrivi(chiavi, stileTitolo, stileSommario) {
+export async function scrivi(chiavi, stileTitolo, stileSommario, profondita = 1) {
   return Word.run(async context => {
-    const r = await capitoli(context, stileTitolo, stileSommario);
+    const r = await capitoli(context, stileTitolo, stileSommario, profondita);
     const scelti = r.capitoli.filter(c => chiavi.includes(c.chiave) && c.voci > 0);
     if (scelti.length === 0) return "Nessun capitolo da scrivere.";
 

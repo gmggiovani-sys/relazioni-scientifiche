@@ -10,7 +10,7 @@
            xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
            xsi:type="TaskPaneApp">
   <Id>a4f76556-9f46-45d0-a350-58dd27734082</Id>
-  <Version>1.0.5.0</Version>
+  <Version>1.0.6.0</Version>
   <ProviderName>Gian Marco</ProviderName>
   <DefaultLocale>it-IT</DefaultLocale>
   <DisplayName DefaultValue="Relazioni Scientifiche"/>
@@ -153,6 +153,30 @@
                   </Action>
                 </Control>
               </Group>
+              <Group id="RS.GImpaginazione">
+                <Label resid="Impaginazione.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16"/>
+                  <bt:Image size="32" resid="Icon.32"/>
+                  <bt:Image size="80" resid="Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="RS.Impaginazione">
+                  <Label resid="ControllaImp.Label"/>
+                  <Supertip>
+                    <Title resid="ControllaImp.Label"/>
+                    <Description resid="Impaginazione.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>RelazioniScientifiche</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Impaginazione"/>
+                  </Action>
+                </Control>
+              </Group>
               <Label resid="Tab.Label"/>
             </CustomTab>
           </ExtensionPoint>
@@ -172,6 +196,7 @@
         <bt:Url id="Taskpane.Giurisprudenza" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/taskpane.html?scheda=scientifiche&amp;pannello=giurisprudenza"/>
         <bt:Url id="Taskpane.Abbreviazioni" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/taskpane.html?scheda=scientifiche&amp;pannello=abbreviazioni"/>
         <bt:Url id="Taskpane.Citazioni" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/taskpane.html?scheda=scientifiche&amp;pannello=citazioni"/>
+        <bt:Url id="Taskpane.Impaginazione" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/taskpane.html?scheda=scientifiche&amp;pannello=impaginazione"/>
         <bt:Url id="Taskpane.Sommari" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/taskpane.html?scheda=scientifiche&amp;pannello=sommari"/>
       </bt:Urls>
       <bt:ShortStrings>
@@ -183,13 +208,16 @@
         <bt:String id="Citazioni.Label" DefaultValue="Citazioni nelle Note"/>
         <bt:String id="Capitoli.Label" DefaultValue="Capitoli"/>
         <bt:String id="Sommari.Label" DefaultValue="Sommari dei Capitoli"/>
+        <bt:String id="Impaginazione.Label" DefaultValue="Impaginazione"/>
+        <bt:String id="ControllaImp.Label" DefaultValue="Controlla Impaginazione"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="Bibliografia.Tip" DefaultValue="Sistema la bibliografia: ordine per cognome, Editore, Città, iniziali dei nomi, corsivi e maiuscoletto. Estrae i campi e aggiunge le opere citate nelle note."/>
-        <bt:String id="Giurisprudenza.Tip" DefaultValue="Sistema l'elenco delle decisioni: abbreviazioni della tabella, date per esteso, riviste in formula breve e in corsivo, ordine per data. Controlla ed estrae i campi."/>
+        <bt:String id="Bibliografia.Tip" DefaultValue="Sistema la bibliografia: ordine per cognome, Editore, Città, iniziali dei nomi e «e» tra gli ultimi due autori, corsivi e maiuscoletto. Estrae i campi e aggiunge le opere citate nelle note."/>
+        <bt:String id="Giurisprudenza.Tip" DefaultValue="Sistema l'elenco delle decisioni: abbreviazioni della tabella, date per esteso, riviste in formula breve e in corsivo, ordine per data (o per organo e data). Controlla ed estrae i campi."/>
         <bt:String id="Abbreviazioni.Tip" DefaultValue="Controlla e corregge le abbreviazioni secondo la tabella della cattedra, nel testo e nelle note. Non tocca corsivi, titoli citati e virgolettato."/>
-        <bt:String id="Citazioni.Tip" DefaultValue="Controlla e formatta le citazioni nelle note: autori in maiuscoletto, titoli e riviste in corsivo, cit. in tondo. Le opere si riconoscono dalla bibliografia."/>
+        <bt:String id="Citazioni.Tip" DefaultValue="Controlla e formatta le citazioni nelle note: autori in maiuscoletto, titoli e riviste in corsivo, cit. in corsivo; iniziali dei nomi e «e» tra gli ultimi due autori. Le opere si riconoscono dalla bibliografia."/>
         <bt:String id="Sommari.Tip" DefaultValue="Dopo il titolo di ogni capitolo scrive o aggiorna il sommario con i titoli dei paragrafi: SOMMARIO: 1. … – 2. … – 2.1. … Scegli con la spunta i capitoli."/>
+        <bt:String id="Impaginazione.Tip" DefaultValue="A4, margini 4 / 3,5 / 3,5 / 3 cm, Times New Roman o Garamond 12, interlinea 1,5, rientro 1 cm; note 10 a interlinea singola. Elenca le differenze e corregge quelle spuntate."/>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>
