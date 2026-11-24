@@ -8,12 +8,13 @@ Contiene: **Bibliografia** (con iniziali dei nomi e «e» tra gli ultimi due aut
 **Abbreviazioni**, **Citazioni nelle note** (con «Autori nelle note»), **Sommari dei capitoli** e
 **Impaginazione**, come la scheda Relazioni Scientifiche della versione Windows.
 
-## Due add-in, stessi file
+## Tre add-in, stessi file
 
-- `manifest.xml` → scheda **Relazioni Scientifiche** (bibliografia, giurisprudenza, abbreviazioni, citazioni, sommari).
-- `manifest-tecniche.xml` → scheda **Relazioni Tecniche** (tabelle di foto, compressione, PDF, numeri in lettere).
+- `manifest.xml` → scheda **Relazioni Scientifiche** (bibliografia, giurisprudenza, abbreviazioni, citazioni, sommari, impaginazione).
+- `manifest-tecniche.xml` → scheda **Relazioni Tecniche** (tabelle di foto con 1, 2, 3 o 4 foto per riga, compressione, PDF).
+- `manifest-numeri.xml` → gruppo **Numeri in lettere** nella scheda Home.
 
-Si installano allo stesso modo (anche tutti e due); usano gli stessi file pubblicati su GitHub Pages.
+Si installano allo stesso modo (anche tutti e tre); usano gli stessi file pubblicati su GitHub Pages.
 
 ## 1. Pubblicare su GitHub Pages
 
