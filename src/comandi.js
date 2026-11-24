@@ -1,5 +1,5 @@
 /* global Office */
-// Comandi eseguiti direttamente dai pulsanti della scheda Relazioni Tecniche (senza pannello).
+// Comandi eseguiti direttamente dai pulsanti delle schede Relazioni Tecniche e Numeri in lettere (senza pannello).
 // Un messaggio compare solo per gli errori e per gli esiti da leggere.
 
 import * as Foto from "./foto.js";
@@ -40,6 +40,7 @@ const COMANDI = {
   rinumera: comando(() => Foto.rinumera()),
   layout1: comando(() => Foto.cambiaLayout(1), false),
   layout2: comando(() => Foto.cambiaLayout(2), false),
+  layout3: comando(() => Foto.cambiaLayout(3), false),
   layout4: comando(() => Foto.cambiaLayout(4), false),
   capitoloFoto: comando(() => Foto.capitoloFoto()),
   comprimi: comando(() => Foto.comprimi(b64 => riduci(b64))),

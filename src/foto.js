@@ -204,7 +204,7 @@ export async function aggiungi(foto, avanzamento) {
   });
 }
 
-// Ridispone la tabella sotto il cursore con 1, 2 o 4 foto per riga
+// Ridispone la tabella sotto il cursore con 1, 2, 3 o 4 foto per riga
 export async function cambiaLayout(colonne, avanzamento) {
   richiedi();
   return Word.run(async context => {

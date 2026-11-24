@@ -665,10 +665,10 @@ async function esportaPdf() {
 }
 
 function preparaFotoPannello() {
-  const ids = ["ins1", "ins2", "ins4", "aggiungiFoto", "lay1", "lay2", "lay4", "indietro", "avanti", "riorganizza", "rinumera", "capitolo", "comprimi", "esportaPdf"];
+  const ids = ["ins1", "ins2", "ins3", "ins4", "aggiungiFoto", "lay1", "lay2", "lay3", "lay4", "indietro", "avanti", "riorganizza", "rinumera", "capitolo", "comprimi", "esportaPdf"];
   const pulsanti = ids.map($);
   const su = (id, f) => $(id).addEventListener("click", () => esegui(pulsanti, async () => { const r = await f(); messaggio(r || "Fatto."); }));
-  for (const n of [1, 2, 4]) {
+  for (const n of [1, 2, 3, 4]) {
     su("ins" + n, async () => Foto.inserisci(await fotoScelte(), n, fotoInserite));
     su("lay" + n, () => Foto.cambiaLayout(n, fotoInserite));
   }
@@ -720,14 +720,22 @@ Office.onReady(info => {
   preparaFotoPannello();
   preparaNumeri();
 
-  // due add-in con gli stessi file: Relazioni Scientifiche e Relazioni Tecniche, ciascuno con i suoi strumenti
+  // tre add-in con gli stessi file: Relazioni Scientifiche, Relazioni Tecniche (foto) e Numeri in lettere,
+  // ciascuno con i suoi strumenti
   const parametri = new URLSearchParams(location.search);
-  const tecniche = parametri.get("scheda") === "tecniche";
+  const SCHEDE = {
+    scientifiche: { gruppo: "Relazioni Scientifiche", primo: "citazioni" },
+    tecniche: { gruppo: "Relazioni Tecniche", primo: "foto" },
+    numeri: { gruppo: "Numeri in lettere", primo: "numeri" }
+  };
+  const scheda = SCHEDE[parametri.get("scheda")] || SCHEDE.scientifiche;
+  const tecniche = scheda === SCHEDE.tecniche;
   for (const g of document.querySelectorAll("#pannello optgroup"))
-    if ((g.label === "Relazioni Tecniche") !== tecniche) g.remove();
+    if (g.label !== scheda.gruppo) g.remove();
+  $("pannello").hidden = document.querySelectorAll("#pannello option").length < 2;
   const ammessi = [...document.querySelectorAll("#pannello option")].map(o => o.value);
   const richiesto = parametri.get("pannello");
-  mostraPannello(ammessi.includes(richiesto) ? richiesto : tecniche ? "foto" : "citazioni");
+  mostraPannello(ammessi.includes(richiesto) ? richiesto : scheda.primo);
 
   // pulsante "Esporta in PDF" della scheda: il pannello si apre e prepara subito il PDF
   if (parametri.get("azione") === "pdf" && tecniche) $("esportaPdf").click();
