@@ -106,7 +106,8 @@ button:disabled { opacity: .55; cursor: default; }
 
 h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--tenue); margin: 16px 0 6px; }
 .tre { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin: 6px 0; }
-.tre button, .colonna button { width: 100%; }
+.quattro { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 6px 0; }
+.tre button, .quattro button, .colonna button { width: 100%; }
 .file { display: grid; gap: 3px; font-weight: 600; font-size: 12px; }
 .file input { font: inherit; font-weight: 400; }
 .spunta { display: flex; gap: 6px; align-items: flex-start; font-size: 12px; margin: 6px 0; }

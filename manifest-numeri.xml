@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Numeri in Lettere – add-in per Word (Mac, Windows, Word sul web): importi in lettere.
+  Usa gli stessi file di Relazioni Scientifiche, pubblicati su GitHub Pages: https://gmggiovani-sys.github.io/relazioni-scientifiche/
+-->
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+           xsi:type="TaskPaneApp">
+  <Id>0e98e234-903f-431a-99d5-d54ca5bdad8d</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>Gian Marco</ProviderName>
+  <DefaultLocale>it-IT</DefaultLocale>
+  <DisplayName DefaultValue="Numeri in Lettere"/>
+  <Description DefaultValue="L'importo sotto il cursore diventa 1.234,50 seguito dalla forma in lettere in corsivo (euro, finanziario, amministrativo)."/>
+  <IconUrl DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/assets/icon-64.png"/>
+  <SupportUrl DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/"/>
+  <AppDomains>
+    <AppDomain>https://gmggiovani-sys.github.io</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Document"/>
+  </Hosts>
+  <Requirements>
+    <Sets DefaultMinVersion="1.1">
+      <Set Name="WordApi" MinVersion="1.3"/>
+    </Sets>
+  </Requirements>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/taskpane.html?scheda=numeri"/>
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Document">
+        <DesktopFormFactor>
+          <FunctionFile resid="Commands.Url"/>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <!-- gruppo nella scheda Home di Word -->
+            <OfficeTab id="TabHome">
+              <Group id="RN.GNumeri">
+                <Label resid="Numeri.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16"/>
+                  <bt:Image size="32" resid="Icon.32"/>
+                  <bt:Image size="80" resid="Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="RN.Euro">
+                  <Label resid="Euro.Label"/>
+                  <Supertip>
+                    <Title resid="Euro.Label"/>
+                    <Description resid="Euro.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>numeriEuro</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="RN.Finanziario">
+                  <Label resid="Fin.Label"/>
+                  <Supertip>
+                    <Title resid="Fin.Label"/>
+                    <Description resid="Fin.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>numeriFinanziario</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="RN.Amministrativo">
+                  <Label resid="Amm.Label"/>
+                  <Supertip>
+                    <Title resid="Amm.Label"/>
+                    <Description resid="Amm.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>numeriAmministrativo</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+
+    <Resources>
+      <bt:Images>
+        <bt:Image id="Icon.16" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/assets/icon-16.png"/>
+        <bt:Image id="Icon.32" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/assets/icon-32.png"/>
+        <bt:Image id="Icon.80" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/assets/icon-80.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="Commands.Url" DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/commands.html"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="Numeri.Label" DefaultValue="Numeri in lettere"/>
+        <bt:String id="Euro.Label" DefaultValue="Formato Euro"/>
+        <bt:String id="Fin.Label" DefaultValue="Formato Finanziario"/>
+        <bt:String id="Amm.Label" DefaultValue="Formato Amministrativo"/>
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="Euro.Tip" DefaultValue="Il numero sotto il cursore diventa 1.234,50 (milleduecentotrentaquattro euro e cinquanta centesimi)."/>
+        <bt:String id="Fin.Tip" DefaultValue="Il numero sotto il cursore diventa 1.234,50 (milleduecentotrentaquattro/50)."/>
+        <bt:String id="Amm.Tip" DefaultValue="Il numero sotto il cursore diventa 1.234,50 (Euro milleduecentotrentaquattro/50)."/>
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>

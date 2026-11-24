@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Relazioni Tecniche – add-in per Word (Mac, Windows, Word sul web): foto e numeri in lettere.
+  Relazioni Tecniche – add-in per Word (Mac, Windows, Word sul web): tabelle di foto.
   Usa gli stessi file di Relazioni Scientifiche, pubblicati su GitHub Pages: https://gmggiovani-sys.github.io/relazioni-scientifiche/
 -->
 <OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
@@ -9,11 +9,11 @@
            xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
            xsi:type="TaskPaneApp">
   <Id>e2d46e6b-ba25-48bb-9c93-a3ad78924273</Id>
-  <Version>1.0.2.0</Version>
+  <Version>1.0.3.0</Version>
   <ProviderName>Gian Marco</ProviderName>
   <DefaultLocale>it-IT</DefaultLocale>
   <DisplayName DefaultValue="Relazioni Tecniche"/>
-  <Description DefaultValue="Strumenti per le relazioni tecniche: tabelle di foto con didascalie numerate, riduzione delle immagini, numeri in lettere."/>
+  <Description DefaultValue="Strumenti per le relazioni tecniche: tabelle di foto con didascalie numerate, riduzione delle immagini, PDF."/>
   <IconUrl DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/assets/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/assets/icon-64.png"/>
   <SupportUrl DefaultValue="https://gmggiovani-sys.github.io/relazioni-scientifiche/"/>
@@ -111,6 +111,21 @@
                       </Icon>
                       <Action xsi:type="ExecuteFunction">
                         <FunctionName>layout2</FunctionName>
+                      </Action>
+                    </Item>
+                    <Item id="RT.Layout3">
+                      <Label resid="L3.Label"/>
+                      <Supertip>
+                        <Title resid="L3.Label"/>
+                        <Description resid="Layout.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.16"/>
+                        <bt:Image size="32" resid="Icon.32"/>
+                        <bt:Image size="80" resid="Icon.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>layout3</FunctionName>
                       </Action>
                     </Item>
                     <Item id="RT.Layout4">
@@ -245,59 +260,6 @@
                   </Action>
                 </Control>
               </Group>
-              <Group id="RT.GNumeri">
-                <Label resid="Numeri.Label"/>
-                <Icon>
-                  <bt:Image size="16" resid="Icon.16"/>
-                  <bt:Image size="32" resid="Icon.32"/>
-                  <bt:Image size="80" resid="Icon.80"/>
-                </Icon>
-                <Control xsi:type="Button" id="RT.Euro">
-                  <Label resid="Euro.Label"/>
-                  <Supertip>
-                    <Title resid="Euro.Label"/>
-                    <Description resid="Euro.Tip"/>
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="Icon.16"/>
-                    <bt:Image size="32" resid="Icon.32"/>
-                    <bt:Image size="80" resid="Icon.80"/>
-                  </Icon>
-                  <Action xsi:type="ExecuteFunction">
-                    <FunctionName>numeriEuro</FunctionName>
-                  </Action>
-                </Control>
-                <Control xsi:type="Button" id="RT.Finanziario">
-                  <Label resid="Fin.Label"/>
-                  <Supertip>
-                    <Title resid="Fin.Label"/>
-                    <Description resid="Fin.Tip"/>
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="Icon.16"/>
-                    <bt:Image size="32" resid="Icon.32"/>
-                    <bt:Image size="80" resid="Icon.80"/>
-                  </Icon>
-                  <Action xsi:type="ExecuteFunction">
-                    <FunctionName>numeriFinanziario</FunctionName>
-                  </Action>
-                </Control>
-                <Control xsi:type="Button" id="RT.Amministrativo">
-                  <Label resid="Amm.Label"/>
-                  <Supertip>
-                    <Title resid="Amm.Label"/>
-                    <Description resid="Amm.Tip"/>
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="Icon.16"/>
-                    <bt:Image size="32" resid="Icon.32"/>
-                    <bt:Image size="80" resid="Icon.80"/>
-                  </Icon>
-                  <Action xsi:type="ExecuteFunction">
-                    <FunctionName>numeriAmministrativo</FunctionName>
-                  </Action>
-                </Control>
-              </Group>
               <Label resid="Tab.Label"/>
             </CustomTab>
           </ExtensionPoint>
@@ -324,6 +286,7 @@
         <bt:String id="Layout.Label" DefaultValue="Cambia Layout"/>
         <bt:String id="L1.Label" DefaultValue="1 Foto per Riga"/>
         <bt:String id="L2.Label" DefaultValue="2 Foto per Riga"/>
+        <bt:String id="L3.Label" DefaultValue="3 Foto per Riga"/>
         <bt:String id="L4.Label" DefaultValue="4 Foto per Riga"/>
         <bt:String id="Riorganizza.Label" DefaultValue="Riorganizza Foto"/>
         <bt:String id="Indietro.Label" DefaultValue="◀ Sposta Indietro"/>
@@ -333,23 +296,16 @@
         <bt:String id="Capitolo.Label" DefaultValue="Crea Capitolo Foto"/>
         <bt:String id="Comprimi.Label" DefaultValue="Comprimi Immagini"/>
         <bt:String id="Pdf.Label" DefaultValue="Esporta in PDF"/>
-        <bt:String id="Numeri.Label" DefaultValue="Numeri in lettere"/>
-        <bt:String id="Euro.Label" DefaultValue="Formato Euro"/>
-        <bt:String id="Fin.Label" DefaultValue="Formato Finanziario"/>
-        <bt:String id="Amm.Label" DefaultValue="Formato Amministrativo"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="Inserisci.Tip" DefaultValue='Apre il pannello per scegliere le foto e inserirle in una tabella con 1, 2 o 4 foto per riga e la didascalia "Foto N – nome del file". Si possono ridurre prima di inserirle.'/>
-        <bt:String id="Layout.Tip" DefaultValue="Con il cursore nella tabella: la ridispone con 1, 2 o 4 foto per riga mantenendo ordine e didascalie."/>
+        <bt:String id="Inserisci.Tip" DefaultValue='Apre il pannello per scegliere le foto e inserirle in una tabella con 1, 2, 3 o 4 foto per riga e la didascalia "Foto N – nome del file". Si possono ridurre prima di inserirle.'/>
+        <bt:String id="Layout.Tip" DefaultValue="Con il cursore nella tabella: la ridispone con 1, 2, 3 o 4 foto per riga mantenendo ordine e didascalie."/>
         <bt:String id="Riorganizza.Tip" DefaultValue="Con il cursore nella tabella: dopo aver tolto delle foto elimina i posti vuoti e le didascalie rimaste sole, poi rinumera."/>
         <bt:String id="Sposta.Tip" DefaultValue="Con il cursore su una foto o sulla sua didascalia: la scambia con la foto precedente o successiva, poi rinumera."/>
         <bt:String id="Rinumera.Tip" DefaultValue='Rinumera in sequenza le didascalie "Foto N" di tutte le tabelle del documento.'/>
         <bt:String id="Capitolo.Tip" DefaultValue="Inserisce il titolo DOCUMENTAZIONE FOTOGRAFICA (Titolo 1) dopo il paragrafo corrente o sopra la tabella delle foto."/>
         <bt:String id="Comprimi.Tip" DefaultValue="Riduce le immagini del documento (lato lungo 1600 px, larghezza massima 15 cm): documento più leggero."/>
         <bt:String id="Pdf.Tip" DefaultValue="Word prepara il PDF del documento e lo scarica (nel pannello, che si apre da solo)."/>
-        <bt:String id="Euro.Tip" DefaultValue="Il numero sotto il cursore diventa 1.234,50 (milleduecentotrentaquattro euro e cinquanta centesimi)."/>
-        <bt:String id="Fin.Tip" DefaultValue="Il numero sotto il cursore diventa 1.234,50 (milleduecentotrentaquattro/50)."/>
-        <bt:String id="Amm.Tip" DefaultValue="Il numero sotto il cursore diventa 1.234,50 (Euro milleduecentotrentaquattro/50)."/>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>
